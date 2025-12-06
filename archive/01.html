@@ -496,32 +496,10 @@
 
     .hier-row {
       display: flex;
-      position: relative;
       align-items: baseline;
       gap: 6px;
       margin-bottom: 10px;
       cursor: pointer;
-    }
-
-    .hier-row.hier-row-drop-inside {
-      background: rgba(255, 255, 255, 0.08);
-    }
-
-    .hier-row.hier-row-drop-before::before,
-    .hier-row.hier-row-drop-after::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      right: 0;
-      border-top: 2px solid #ffffff;
-    }
-
-    .hier-row.hier-row-drop-before::before {
-      top: -2px;
-    }
-
-    .hier-row.hier-row-drop-after::after {
-      bottom: -2px;
     }
 
     .hier-tag {
@@ -1381,30 +1359,13 @@ body {
 
     const treeRootEl = document.getElementById('treeRoot');
     let dragNodeId = null;
-    let dragOverMode = null;
-
-    // Включаем встроенную проверку орфографии браузера для всех полей ввода текста
-    document.addEventListener('focusin', (e) => {
-      const t = e.target;
-      if (!t || !t.tagName) return;
-      const tag = t.tagName.toLowerCase();
-      if (tag === 'textarea') {
-        t.setAttribute('spellcheck', 'true');
-      } else if (tag === 'input') {
-        const type = (t.getAttribute('type') || 'text').toLowerCase();
-        if (type === 'text' || type === 'search') {
-          t.setAttribute('spellcheck', 'true');
-        }
-      }
-    });
-
 
     if (treeRootEl) {
       treeRootEl.addEventListener('dragstart', (e) => {
         const row = e.target.closest('.hier-row');
         if (!row || !row.dataset.id) return;
         dragNodeId = row.dataset.id;
-        dragOverMode = null;
+        row.classList.add('hier-row-drop');
         if (e.dataTransfer) {
           e.dataTransfer.effectAllowed = 'move';
           try {
@@ -1417,31 +1378,7 @@ body {
         const row = e.target.closest('.hier-row');
         if (!row) return;
         e.preventDefault();
-
-        const rect = row.getBoundingClientRect();
-        const offsetY = e.clientY - rect.top;
-        let mode = 'inside';
-        if (offsetY < rect.height * 0.25) {
-          mode = 'before';
-        } else if (offsetY > rect.height * 0.75) {
-          mode = 'after';
-        }
-
-        dragOverMode = mode;
-
-        // очистим старые подсветки
-        Array.from(treeRootEl.querySelectorAll('.hier-row')).forEach(r => {
-          r.classList.remove('hier-row-drop', 'hier-row-drop-before', 'hier-row-drop-after', 'hier-row-drop-inside');
-        });
-
-        if (mode === 'before') {
-          row.classList.add('hier-row-drop-before');
-        } else if (mode === 'after') {
-          row.classList.add('hier-row-drop-after');
-        } else {
-          row.classList.add('hier-row-drop-inside');
-        }
-
+        row.classList.add('hier-row-drop');
         if (e.dataTransfer) {
           e.dataTransfer.dropEffect = 'move';
         }
@@ -1450,7 +1387,7 @@ body {
       treeRootEl.addEventListener('dragleave', (e) => {
         const row = e.target.closest('.hier-row');
         if (!row) return;
-        row.classList.remove('hier-row-drop', 'hier-row-drop-before', 'hier-row-drop-after', 'hier-row-drop-inside');
+        row.classList.remove('hier-row-drop');
       });
 
       treeRootEl.addEventListener('drop', (e) => {
@@ -1460,65 +1397,26 @@ body {
         const targetId = row.dataset.id;
         const draggedId = dragNodeId;
         dragNodeId = null;
-
-        Array.from(treeRootEl.querySelectorAll('.hier-row')).forEach(r => {
-          r.classList.remove('hier-row-drop', 'hier-row-drop-before', 'hier-row-drop-after', 'hier-row-drop-inside');
-        });
-
-        if (!draggedId || draggedId === targetId) {
-          dragOverMode = null;
-          return;
-        }
-
+        row.classList.remove('hier-row-drop');
+        if (!draggedId || draggedId === targetId) return;
         const draggedNode = getNode(draggedId);
         const targetNode = getNode(targetId);
-        if (!draggedNode || !targetNode) {
-          dragOverMode = null;
-          return;
-        }
+        if (!draggedNode || !targetNode) return;
 
-        let mode = dragOverMode || 'inside';
         let newParentId;
-        let afterSiblingId = null;
-
-        if (mode === 'inside' && targetNode.type === 'category') {
-          // Бросили внутрь категории — кладём в конец её содержимого
+        if (targetNode.type === 'category') {
           newParentId = targetNode.id;
         } else {
-          // Бросили между соседями — работаем на уровне родителя
-          const parent = getNode(targetNode.parentId || state.rootId);
-          if (!parent) {
-            dragOverMode = null;
-            return;
-          }
-          newParentId = parent.id;
-          const siblings = parent.children || [];
-          const idx = siblings.indexOf(targetNode.id);
-
-          if (mode === 'before') {
-            if (idx <= 0) {
-              // вставка в самое начало
-              afterSiblingId = '__FIRST__';
-            } else {
-              // вставка после предыдущего соседа => визуально "перед" текущим
-              afterSiblingId = siblings[idx - 1];
-            }
-          } else {
-            // after или inside по не‑категории — просто после целевого узла
-            afterSiblingId = targetNode.id;
-          }
+          newParentId = targetNode.parentId || state.rootId;
         }
-
-        moveNode(draggedId, newParentId, afterSiblingId);
-        dragOverMode = null;
+        moveNode(draggedId, newParentId);
         render();
       });
 
       treeRootEl.addEventListener('dragend', () => {
         dragNodeId = null;
-        dragOverMode = null;
         Array.from(treeRootEl.querySelectorAll('.hier-row')).forEach(r => {
-          r.classList.remove('hier-row-drop', 'hier-row-drop-before', 'hier-row-drop-after', 'hier-row-drop-inside');
+          r.classList.remove('hier-row-drop');
         });
       });
     }
@@ -1732,7 +1630,7 @@ body {
       saveState();
     }
 
-    function moveNode(nodeId, newParentId, afterSiblingId = null) {
+    function moveNode(nodeId, newParentId) {
       const node = getNode(nodeId);
       const newParent = getNode(newParentId);
       if (!node || !newParent) return;
@@ -1751,23 +1649,8 @@ body {
       }
 
       newParent.children = newParent.children || [];
-
-      // Специальный маркер: вставить в самое начало списка детей
-      if (afterSiblingId === '__FIRST__') {
-        newParent.children = newParent.children.filter(c => c !== node.id);
-        newParent.children.unshift(node.id);
-      }
-      // если нужно — вставляем сразу после указанного соседа
-      else if (afterSiblingId && newParent.children.includes(afterSiblingId)) {
-        const idx = newParent.children.indexOf(afterSiblingId);
-        // на всякий случай удалим узел, если он уже был в этом списке
-        newParent.children = newParent.children.filter(c => c !== node.id);
-        newParent.children.splice(idx + 1, 0, node.id);
-      } else {
-        // по умолчанию кладём в конец
-        if (!newParent.children.includes(node.id)) {
-          newParent.children.push(node.id);
-        }
+      if (!newParent.children.includes(node.id)) {
+        newParent.children.push(node.id);
       }
 
       node.parentId = newParent.id;
