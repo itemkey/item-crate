@@ -1,0 +1,862 @@
+{
+  "rootId": "root",
+  "nextId": 141,
+  "nodes": {
+    "root": {
+      "id": "root",
+      "name": "Категории",
+      "type": "category",
+      "parentId": null,
+      "children": [
+        "n1"
+      ],
+      "cards": []
+    },
+    "n1": {
+      "id": "n1",
+      "name": "История Беларуси",
+      "type": "category",
+      "parentId": "root",
+      "children": [
+        "n2"
+      ],
+      "config": {
+        "scope": "subject",
+        "preset": "history"
+      },
+      "cards": []
+    },
+    "n2": {
+      "id": "n2",
+      "name": "ВКЛ",
+      "type": "category",
+      "parentId": "n1",
+      "children": [
+        "n3",
+        "n83"
+      ],
+      "cards": []
+    },
+    "n3": {
+      "id": "n3",
+      "name": "Князья",
+      "type": "category",
+      "parentId": "n2",
+      "children": [
+        "n9",
+        "n26",
+        "n32",
+        "n40",
+        "n46",
+        "n56"
+      ],
+      "cards": []
+    },
+    "n9": {
+      "id": "n9",
+      "name": "Миндовг",
+      "type": "category",
+      "parentId": "n3",
+      "children": [
+        "n10",
+        "n23",
+        "n74"
+      ],
+      "cards": []
+    },
+    "n10": {
+      "id": "n10",
+      "name": "Года",
+      "type": "characteristic",
+      "parentId": "n9",
+      "children": [],
+      "factType": "years",
+      "cards": [
+        {
+          "id": "n11",
+          "kind": "years",
+          "event": "Миндовг уже имел значительную власть и контролировал определенную часть литовских земель - \"Литва Миндовга\", хотя еще не правил всей Литвой",
+          "timeRaw": "1235",
+          "era": "н. э.",
+          "person": "Миндовг"
+        },
+        {
+          "id": "n12",
+          "kind": "years",
+          "event": "произошла битва под Шяуляем, где литовцы, во главе Миндовга, разгромили Орден меченосцев",
+          "timeRaw": "1236",
+          "era": "н. э.",
+          "person": "Миндовг"
+        },
+        {
+          "id": "n13",
+          "kind": "years",
+          "event": "Миндовг стал князем Новогородского(Новогрудок) княжества",
+          "timeRaw": "1240",
+          "era": "н. э.",
+          "person": "Миндовг"
+        },
+        {
+          "id": "n14",
+          "kind": "years",
+          "event": "Миндовг принял православие",
+          "timeRaw": "1246",
+          "era": "н. э.",
+          "person": "Миндовг"
+        },
+        {
+          "id": "n15",
+          "kind": "years",
+          "event": "Миндовг принял католичество",
+          "timeRaw": "1251",
+          "era": "н. э.",
+          "person": "Миндовг"
+        },
+        {
+          "id": "n16",
+          "kind": "years",
+          "event": "Миндовг короновался в Новгородке (Можно считать официальной датой создания ВКЛ)",
+          "timeRaw": "1253",
+          "era": "н. э.",
+          "person": "Миндовг"
+        },
+        {
+          "id": "n17",
+          "kind": "years",
+          "event": "произошла битва на озере Дурбе, под командованием Миндовга, против Тевтонского ордена",
+          "timeRaw": "1260",
+          "era": "н. э.",
+          "person": "Миндовг"
+        },
+        {
+          "id": "n18",
+          "kind": "years",
+          "event": "Миндовг разорвал союз с крестоносцами, и заключил союз с Александром Невским",
+          "timeRaw": "1261",
+          "era": "н. э.",
+          "person": "Миндовг"
+        },
+        {
+          "id": "n19",
+          "kind": "years",
+          "event": "Миндовг был убит в результате заговора между Тройнатом, Товтивилом, Довмонтом",
+          "timeRaw": "1263",
+          "era": "н. э.",
+          "person": "Миндовг"
+        }
+      ]
+    },
+    "n23": {
+      "id": "n23",
+      "name": "Факт",
+      "type": "characteristic",
+      "parentId": "n9",
+      "children": [],
+      "factType": "assertion",
+      "cards": [
+        {
+          "id": "n24",
+          "kind": "assertion",
+          "text": "первый князь ВКЛ, объединил Литву и Новогородское княжество в одно государство",
+          "subject": "Миндовг"
+        },
+        {
+          "id": "n25",
+          "kind": "assertion",
+          "text": "Годы правления: 1253 - 1263 гг.",
+          "subject": "Миндовг"
+        }
+      ]
+    },
+    "n26": {
+      "id": "n26",
+      "name": "Тройнат",
+      "type": "category",
+      "parentId": "n3",
+      "children": [
+        "n28"
+      ],
+      "cards": []
+    },
+    "n28": {
+      "id": "n28",
+      "name": "Факт",
+      "type": "characteristic",
+      "parentId": "n26",
+      "children": [],
+      "factType": "years",
+      "cards": [
+        {
+          "id": "n29",
+          "kind": "assertion",
+          "text": "один из заговорщиков против Миндовга",
+          "subject": "Тройнат"
+        },
+        {
+          "id": "n30",
+          "kind": "assertion",
+          "text": "стал князем ВКЛ после убийства Миндовга",
+          "subject": "Тройнат"
+        },
+        {
+          "id": "n31",
+          "kind": "assertion",
+          "text": "его правление сопровождалось междоусобицами и нестабильностью",
+          "subject": "Тройнат"
+        }
+      ]
+    },
+    "n32": {
+      "id": "n32",
+      "name": "Войшелк",
+      "type": "category",
+      "parentId": "n3",
+      "children": [
+        "n33"
+      ],
+      "cards": []
+    },
+    "n33": {
+      "id": "n33",
+      "name": "Факт",
+      "type": "characteristic",
+      "parentId": "n32",
+      "children": [],
+      "factType": "assertion",
+      "cards": [
+        {
+          "id": "n34",
+          "kind": "assertion",
+          "text": "сын Миндовга",
+          "subject": "Войшелк"
+        },
+        {
+          "id": "n35",
+          "kind": "assertion",
+          "text": "принял монашество",
+          "subject": "Войшелк"
+        },
+        {
+          "id": "n36",
+          "kind": "assertion",
+          "text": "после убийства Тройната вернулся к власти",
+          "subject": "Войшелк"
+        },
+        {
+          "id": "n37",
+          "kind": "assertion",
+          "text": "передал власть Шварну",
+          "subject": "Войшелк"
+        },
+        {
+          "id": "n38",
+          "kind": "assertion",
+          "text": "был убит Левом Даниловичем",
+          "subject": "Войшелк"
+        },
+        {
+          "id": "n39",
+          "kind": "assertion",
+          "text": "его правление способствовало укреплению христианства",
+          "subject": "Войшелк"
+        }
+      ]
+    },
+    "n40": {
+      "id": "n40",
+      "name": "Тройдень",
+      "type": "category",
+      "parentId": "n3",
+      "children": [
+        "n41",
+        "n43"
+      ],
+      "cards": []
+    },
+    "n41": {
+      "id": "n41",
+      "name": "Факт",
+      "type": "characteristic",
+      "parentId": "n40",
+      "children": [],
+      "factType": "assertion",
+      "cards": [
+        {
+          "id": "n42",
+          "kind": "assertion",
+          "text": "один из князей ВКЛ, пришёл к власти после Войшелка",
+          "subject": "Тройдень"
+        }
+      ]
+    },
+    "n43": {
+      "id": "n43",
+      "name": "Года",
+      "type": "characteristic",
+      "parentId": "n40",
+      "children": [],
+      "factType": "years",
+      "cards": [
+        {
+          "id": "n44",
+          "kind": "years",
+          "event": "Тройдень разбил татар возле Гродно и Слонима",
+          "timeRaw": "1277",
+          "era": "н. э.",
+          "person": "Тройдень"
+        },
+        {
+          "id": "n45",
+          "kind": "years",
+          "event": "Тройдень воевал с крестоносцами возле Динабурга",
+          "timeRaw": "1281",
+          "era": "н. э.",
+          "person": "Тройдень"
+        }
+      ]
+    },
+    "n46": {
+      "id": "n46",
+      "name": "Витень",
+      "type": "category",
+      "parentId": "n3",
+      "children": [
+        "n47",
+        "n50"
+      ],
+      "cards": []
+    },
+    "n47": {
+      "id": "n47",
+      "name": "Факт",
+      "type": "characteristic",
+      "parentId": "n46",
+      "children": [],
+      "factType": "assertion",
+      "cards": [
+        {
+          "id": "n48",
+          "kind": "assertion",
+          "text": "князь ВКЛ до Гедимина",
+          "subject": "Витень"
+        },
+        {
+          "id": "n49",
+          "kind": "assertion",
+          "text": "укреплял государство и вел борьбу с крестоносцами",
+          "subject": "Витень"
+        },
+        {
+          "id": "n51",
+          "kind": "assertion",
+          "text": "при нём ВКЛ усилило своё влияние в регионе",
+          "subject": "Витень"
+        }
+      ]
+    },
+    "n50": {
+      "id": "n50",
+      "name": "Года",
+      "type": "characteristic",
+      "parentId": "n46",
+      "children": [],
+      "factType": "years",
+      "cards": [
+        {
+          "id": "n52",
+          "kind": "years",
+          "event": "битва Витеня с крестоносцами под Рудой",
+          "timeRaw": "1298",
+          "era": "н. э.",
+          "person": "Витень"
+        },
+        {
+          "id": "n53",
+          "kind": "years",
+          "event": "укрепление Витенем Новогрудка как одного из центров ВКЛ",
+          "timeRaw": "1316",
+          "era": "н. э.",
+          "person": "Витень"
+        },
+        {
+          "id": "n54",
+          "kind": "years",
+          "event": "приблизительное время смерти Витеня",
+          "timeRaw": "1316",
+          "era": "н. э.",
+          "person": "Витень"
+        }
+      ]
+    },
+    "n56": {
+      "id": "n56",
+      "name": "Гедимин",
+      "type": "category",
+      "parentId": "n3",
+      "children": [
+        "n57",
+        "n58"
+      ],
+      "cards": []
+    },
+    "n57": {
+      "id": "n57",
+      "name": "Года",
+      "type": "characteristic",
+      "parentId": "n56",
+      "children": [],
+      "factType": "years",
+      "cards": [
+        {
+          "id": "n60",
+          "kind": "years",
+          "event": "Гедимин основал Вильно и перенес столицу в Вильно",
+          "timeRaw": "1323",
+          "era": "н. э.",
+          "person": "Гедимин"
+        },
+        {
+          "id": "n65",
+          "kind": "years",
+          "event": "битва Гедимина на реке Окмене",
+          "timeRaw": "1331",
+          "era": "н. э.",
+          "person": "Гедимин"
+        }
+      ]
+    },
+    "n58": {
+      "id": "n58",
+      "name": "Факт",
+      "type": "characteristic",
+      "parentId": "n56",
+      "children": [],
+      "factType": "assertion",
+      "cards": [
+        {
+          "id": "n59",
+          "kind": "assertion",
+          "text": "великая князь ВКЛ, при котором государство значительно усилилось",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n61",
+          "kind": "assertion",
+          "text": "при Гедимине ВКЛ активно расширяло свои территории на восток и запад",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n62",
+          "kind": "assertion",
+          "text": "известен дипломатическими письмами западноевропейским правителям и орденам",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n63",
+          "kind": "assertion",
+          "text": "стремился привлечь в ВКЛ ремесленников и купцов из Европы",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n64",
+          "kind": "assertion",
+          "text": "при нём ВКЛ укрепило позиции в борьбе с Тевтонским орденом",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n66",
+          "kind": "assertion",
+          "text": "династия Гедиминовичей стала одной из ведущих династий Восточной Европы",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n67",
+          "kind": "assertion",
+          "text": "сыновья Гедимина правили в разных частях ВКЛ и соседних землях",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n68",
+          "kind": "assertion",
+          "text": "Гедимин поддерживал относительную религиозную терпимость в государстве",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n69",
+          "kind": "assertion",
+          "text": "при нём укреплялась роль Вильно как политического и культурного центра",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n70",
+          "kind": "assertion",
+          "text": "его политика заложила основу дальнейшего усиления ВКЛ при его преемниках",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n71",
+          "kind": "assertion",
+          "text": "Гедимин стал родоначальником династии, связанной с многими европейскими правящими домами",
+          "subject": "Гедимин"
+        },
+        {
+          "id": "n72",
+          "kind": "assertion",
+          "text": "его правление считается одним из ключевых этапов формирования мощи ВКЛ",
+          "subject": "Гедимин"
+        }
+      ]
+    },
+    "n74": {
+      "id": "n74",
+      "type": "characteristic",
+      "name": "123",
+      "parentId": "n9",
+      "children": [],
+      "factType": "assertion",
+      "cards": []
+    },
+    "n83": {
+      "id": "n83",
+      "type": "category",
+      "name": "Система государственной власти",
+      "parentId": "n2",
+      "children": [
+        "n84",
+        "n112",
+        "n118"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n84": {
+      "id": "n84",
+      "type": "category",
+      "name": "Верхняя власть",
+      "parentId": "n83",
+      "children": [
+        "n87",
+        "n100",
+        "n107"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n87": {
+      "id": "n87",
+      "type": "category",
+      "name": "ВЕЛИКИЙ КНЯЗЬ ЛИТВОСКИЙ",
+      "parentId": "n84",
+      "children": [
+        "n89",
+        "n94"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n89": {
+      "id": "n89",
+      "type": "characteristic",
+      "name": "НАИМИНОВАНИЯ",
+      "parentId": "n87",
+      "children": [],
+      "factType": "olist",
+      "cards": [
+        {
+          "id": "n96",
+          "kind": "olist-item",
+          "text": "Великий князь литовский"
+        },
+        {
+          "id": "n97",
+          "kind": "olist-item",
+          "text": "король"
+        },
+        {
+          "id": "n98",
+          "kind": "olist-item",
+          "text": "господарь"
+        },
+        {
+          "id": "n99",
+          "kind": "olist-item",
+          "text": "король литвы и руси"
+        }
+      ]
+    },
+    "n94": {
+      "id": "n94",
+      "type": "characteristic",
+      "name": "факты",
+      "parentId": "n87",
+      "children": [],
+      "factType": "assertion",
+      "cards": [
+        {
+          "id": "n95",
+          "kind": "assertion",
+          "text": "наследственная власть",
+          "subject": "ВЕЛИКИЙ КНЯЗЬ ЛИТВОСКИЙ"
+        }
+      ]
+    },
+    "n100": {
+      "id": "n100",
+      "type": "category",
+      "name": "паны-рада",
+      "parentId": "n84",
+      "children": [
+        "n101"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n101": {
+      "id": "n101",
+      "type": "characteristic",
+      "name": "факты",
+      "parentId": "n100",
+      "children": [],
+      "factType": "assertion",
+      "cards": [
+        {
+          "id": "n103",
+          "kind": "assertion",
+          "text": "с 14 века - совещательный орган при князе",
+          "subject": "паны-рада"
+        },
+        {
+          "id": "n105",
+          "kind": "assertion",
+          "text": "\"преднейшая лавица\" - постоянно действующий орган власти  в стране (центральная администрация, местное управление...)",
+          "subject": "паны-рада"
+        },
+        {
+          "id": "n106",
+          "kind": "assertion",
+          "text": "1492 год, 1506год -привилей Александра Раде, о расширении полномочий - законодательные органы власти",
+          "subject": "паны-рада"
+        }
+      ]
+    },
+    "n107": {
+      "id": "n107",
+      "type": "category",
+      "name": "сейм",
+      "parentId": "n84",
+      "children": [
+        "n108"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n108": {
+      "id": "n108",
+      "type": "characteristic",
+      "name": "факты",
+      "parentId": "n107",
+      "children": [],
+      "factType": "assertion",
+      "cards": [
+        {
+          "id": "n109",
+          "kind": "assertion",
+          "text": "сьезд шляхты в вкл",
+          "subject": "сейм"
+        },
+        {
+          "id": "n110",
+          "kind": "assertion",
+          "text": "с 1511 года шляхта заседала по 2 представителя от поветов",
+          "subject": "сейм"
+        },
+        {
+          "id": "n111",
+          "kind": "assertion",
+          "text": "с 14 века - высший законодательный орган власти",
+          "subject": "сейм"
+        }
+      ]
+    },
+    "n112": {
+      "id": "n112",
+      "type": "category",
+      "name": "центральная власть",
+      "parentId": "n83",
+      "children": [
+        "n114"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n114": {
+      "id": "n114",
+      "type": "characteristic",
+      "name": "урядники",
+      "parentId": "n112",
+      "children": [],
+      "factType": "term",
+      "cards": [
+        {
+          "id": "n115",
+          "kind": "term",
+          "word": "канцлер",
+          "definition": "заведовал государственной канцелярией, печатью"
+        },
+        {
+          "id": "n116",
+          "kind": "term",
+          "word": "гетман наивысший",
+          "definition": "командовал войском вкл"
+        },
+        {
+          "id": "n117",
+          "kind": "term",
+          "word": "подскарбий земкский",
+          "definition": "заведовал казной (скарбом) вкл"
+        }
+      ]
+    },
+    "n118": {
+      "id": "n118",
+      "type": "category",
+      "name": "местное управление",
+      "parentId": "n83",
+      "children": [
+        "n124"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n121": {
+      "id": "n121",
+      "type": "characteristic",
+      "name": "административные единицы",
+      "parentId": "n124",
+      "children": [],
+      "factType": "term",
+      "cards": [
+        {
+          "id": "n122",
+          "kind": "term",
+          "word": "Воеводство",
+          "definition": "крупнейшая административная единица, делилось на поветы (на современный лад - области)"
+        },
+        {
+          "id": "n123",
+          "kind": "term",
+          "word": "повет = волость",
+          "definition": "административная единица (на современный лад - район)"
+        }
+      ]
+    },
+    "n124": {
+      "id": "n124",
+      "type": "category",
+      "name": "АДМИНИСТРАТИВНЫЕ ЕДИНИЦЫ",
+      "parentId": "n118",
+      "children": [
+        "n121",
+        "n125",
+        "n126"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n125": {
+      "id": "n125",
+      "type": "category",
+      "name": "Воеводство",
+      "parentId": "n124",
+      "children": [
+        "n131"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n126": {
+      "id": "n126",
+      "type": "category",
+      "name": "повет(волость)",
+      "parentId": "n124",
+      "children": [
+        "n137",
+        "n140"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n131": {
+      "id": "n131",
+      "type": "characteristic",
+      "name": "ПРЕДСТАВИТЕЛИ ВОЕВОДСТВА",
+      "parentId": "n125",
+      "children": [],
+      "factType": "term",
+      "cards": [
+        {
+          "id": "n132",
+          "kind": "term",
+          "word": "воевода",
+          "definition": "сменил княжеского наместника; из местной шляхты; назначен пожизненно; присутствовал на заседании рады и сейма"
+        },
+        {
+          "id": "n133",
+          "kind": "term",
+          "word": "каштелян",
+          "definition": "возглавлял войско воеводства"
+        },
+        {
+          "id": "n135",
+          "kind": "term",
+          "word": "городничий",
+          "definition": "отвечал за укрепление воеводского замка"
+        },
+        {
+          "id": "n136",
+          "kind": "term",
+          "word": "ключник",
+          "definition": "отвечал за сбор податей"
+        }
+      ]
+    },
+    "n137": {
+      "id": "n137",
+      "type": "characteristic",
+      "name": "ПРЕДСТАВИТЕЛИ повета",
+      "parentId": "n126",
+      "children": [],
+      "factType": "term",
+      "cards": [
+        {
+          "id": "n138",
+          "kind": "term",
+          "word": "староста",
+          "definition": "руководил районом, представитель местной шляхты"
+        },
+        {
+          "id": "n139",
+          "kind": "term",
+          "word": "Тиун",
+          "definition": "старец,, отвечал за сбор податей в государственную казну"
+        }
+      ]
+    },
+    "n140": {
+      "id": "n140",
+      "type": "characteristic",
+      "name": "определения повета",
+      "parentId": "n126",
+      "children": [],
+      "factType": "term",
+      "cards": [
+        {
+          "id": "n141",
+          "kind": "term",
+          "word": "волость(10-30 сёл)",
+          "definition": "сельский войт"
+        }
+      ]
+    }
+  }
+}
