@@ -105,42 +105,6 @@
     .brain-left {
       flex: 1;
     }
-    .brain-site-name {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--muted);
-      margin-bottom: 18px;
-    }
-
-    .brain-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 380px;
-    }
-
-    .brain-menu-btn {
-      border: 1px solid #ffffff;
-      background: #000000;
-      color: #ffffff;
-      padding: 10px 16px;
-      text-align: left;
-      cursor: pointer;
-      font-family: inherit;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      font-size: clamp(16px, 2.4vw, 22px);
-      width: 100%;
-      transition: background 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out;
-    }
-
-    .brain-menu-btn:hover {
-      background: #ffffff;
-      color: #000000;
-      transform: translateY(-2px);
-    }
-
 
     .brain-main-title {
       font-size: clamp(32px, 5vw, 46px);
@@ -1214,26 +1178,14 @@ body {
   <!-- 02. В МОЗГ -->
   <div id="screen-brain" class="screen">
     <div class="screen-inner">
-      
       <div class="brain-left">
-        <div class="brain-site-name small-elongated">item:crate</div>
-
-        <div class="brain-menu">
-          <button class="brain-menu-btn elongated" id="brainTitle" type="button">
-            АКТИВИЗАЦИЯ НЕЙРОНОВ
-          </button>
-          <button class="brain-menu-btn small-elongated" type="button">
-            ЗАПИСКИ ОНОИ?
-          </button>
-          <button class="brain-menu-btn small-elongated" type="button">
-            НЕ ЕЩЁ ПОТЕРЯННЫЕ МОМЕНТЫ
-          </button>
-        </div>
+        <div class="brain-main-title elongated" id="brainTitle">АКТИВИЗАЦИЯ НЕЙРОНОВ</div>
+        <div class="brain-sub small-elongated">ЗАПИСКИ ОНОИ?</div>
+        <div class="brain-sub small-elongated">НЕ ЕЩЁ ПОТЕРЯННЫЕ МОМЕНТЫ</div>
 
         <div class="brain-left-bottom">
           помоги сам себе<span class="elongated"> а этот сайт кста не поможет </span>
         </div>
-      </div
       </div>
 
       <div class="brain-right">
