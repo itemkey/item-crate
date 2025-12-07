@@ -2674,7 +2674,7 @@ function renderTree() {
         i3day.type = 'number';
         i3day.min = '1';
         i3day.max = '31';
-        i3day.placeholder = '32';
+        i3day.placeholder = '1';
         const i3month = document.createElement('input');
         i3month.className = 'form-input';
         i3month.placeholder = 'августа';
@@ -2790,7 +2790,7 @@ function renderTree() {
         secAddBody.appendChild(r4);
         secAddBody.appendChild(r5);
         secAddBody.appendChild(rowBtns);
-      } else if (node.factType === 'olist') {
+      } else if (node.factType === 'olist') {      } else if (node.factType === 'olist') {
         const r1 = document.createElement('div');
         r1.className = 'form-row';
         const l1 = document.createElement('div');
@@ -3199,7 +3199,7 @@ function renderTree() {
               rowBtns.appendChild(colSave);
               rowBtns.appendChild(colCancel);
               form.appendChild(rowBtns);
-            } else if (node.factType === 'olist') {
+            } else if (node.factType === 'olist') {} else if (node.factType === 'olist') {
               const rowF = document.createElement('div');
               rowF.className = 'form-row';
               const l = document.createElement('div');

@@ -1,6 +1,6 @@
 {
   "rootId": "root",
-  "nextId": 314,
+  "nextId": 327,
   "nodes": {
     "root": {
       "id": "root",
@@ -36,7 +36,8 @@
         "n3",
         "n83",
         "n209",
-        "n311"
+        "n311",
+        "n321"
       ],
       "cards": []
     },
@@ -1989,7 +1990,8 @@
       "name": "войско и военное дело вкл",
       "parentId": "n2",
       "children": [
-        "n313"
+        "n313",
+        "n317"
       ],
       "cards": [],
       "config": null
@@ -2001,6 +2003,67 @@
       "parentId": "n311",
       "children": [],
       "factType": "years",
+      "cards": [
+        {
+          "id": "n315",
+          "kind": "years",
+          "event": "ополчение \"погоня\" - народное всесословное ополчение",
+          "timeRaw": "14-15",
+          "era": "вв.",
+          "person": "войско и военное дело вкл",
+          "timeExact": ""
+        },
+        {
+          "id": "n319",
+          "kind": "years",
+          "event": "посполитное рушение - всеобщее ополчение(рыцарство, крестьяне:1 человек от 8 служб)",
+          "timeRaw": "14-17",
+          "era": "вв.",
+          "person": "войско и военное дело вкл",
+          "timeExact": null
+        }
+      ]
+    },
+    "n317": {
+      "id": "n317",
+      "type": "characteristic",
+      "name": "СИСТЕМА ОРГАНИЗАЦИИ ВОЙСКА",
+      "parentId": "n311",
+      "children": [],
+      "factType": "term",
+      "cards": [
+        {
+          "id": "n318",
+          "kind": "term",
+          "word": "ополчение \"погоня\"",
+          "definition": "народное всесословное ополчение — 14-15 вв."
+        },
+        {
+          "id": "n320",
+          "kind": "term",
+          "word": "посполитное рушение",
+          "definition": "всеобщее ополчение(рыцарство, крестьяне:1 человек от 8 служб)"
+        }
+      ]
+    },
+    "n321": {
+      "id": "n321",
+      "type": "category",
+      "name": "ЭТАПЫ ЗАКРЕПОЩЕНИЯ КРЕСТЬЯН",
+      "parentId": "n2",
+      "children": [
+        "n327"
+      ],
+      "cards": [],
+      "config": null
+    },
+    "n327": {
+      "id": "n327",
+      "type": "characteristic",
+      "name": "Новая характеристика",
+      "parentId": "n321",
+      "children": [],
+      "factType": "olist",
       "cards": []
     }
   }
