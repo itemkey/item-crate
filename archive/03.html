@@ -777,15 +777,6 @@
       text-align: left;
     }
 
-    .card-table-actions,
-    .card-order-controls {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: flex-start;
-    }
-
 
     /* Кнопка сворачивания левой панели */
     .sidebar-toggle-fixed {
@@ -1156,13 +1147,7 @@ body {
       background: rgba(255, 255, 255, 0.08);
     }
 
-  
-    .date-exact-row {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-    }
-</style>
+  </style>
 </head>
 <body>
   <!-- 01. Заставка -->
@@ -1805,7 +1790,7 @@ body {
       saveState();
     }
 
-    function addYearsCard(nodeId, event, timeRaw, era, person, timeExact) {
+    function addYearsCard(nodeId, event, timeRaw, era, person) {
       const node = getNode(nodeId);
       if (!node || node.type !== 'characteristic') return;
       node.factType = 'years';
@@ -1816,8 +1801,7 @@ body {
         event: (event || '').trim(),
         timeRaw: (timeRaw || '').trim(),
         era: (era || '').trim(),
-        person: (person || '').trim() || null,
-        timeExact: (timeExact || '').trim() || null
+        person: (person || '').trim() || null
       });
       saveState();
     }
@@ -1856,16 +1840,12 @@ body {
       saveState();
     }
 
-    function moveCard(nodeId, cardId, direction) {
+    function updateCard(nodeId, cardId, patch) {
       const node = getNode(nodeId);
       if (!node || node.type !== 'characteristic') return;
-      const cards = node.cards || [];
-      const index = cards.findIndex(c => c.id === cardId);
-      if (index === -1) return;
-      const newIndex = direction === 'up' ? index - 1 : index + 1;
-      if (newIndex < 0 || newIndex >= cards.length) return;
-      const [moved] = cards.splice(index, 1);
-      cards.splice(newIndex, 0, moved);
+      const card = (node.cards || []).find(c => c.id === cardId);
+      if (!card) return;
+      Object.assign(card, patch);
       saveState();
     }
 
@@ -2579,22 +2559,12 @@ function renderTree() {
         r3.className = 'form-row';
         const l3 = document.createElement('div');
         l3.className = 'form-label';
-        l3.textContent = 'Точная дата (необязательно)';
+        l3.textContent = 'Эра';
         const c3 = document.createElement('div');
-        const dateWrap = document.createElement('div');
-        dateWrap.className = 'date-exact-row';
-        const i3day = document.createElement('input');
-        i3day.className = 'form-input';
-        i3day.type = 'number';
-        i3day.min = '1';
-        i3day.max = '31';
-        i3day.placeholder = '1';
-        const i3month = document.createElement('input');
-        i3month.className = 'form-input';
-        i3month.placeholder = 'августа';
-        dateWrap.appendChild(i3day);
-        dateWrap.appendChild(i3month);
-        c3.appendChild(dateWrap);
+        const i3 = document.createElement('input');
+        i3.className = 'form-input';
+        i3.placeholder = 'Например: «н. э.» (можно оставить пустым)';
+        c3.appendChild(i3);
         r3.appendChild(l3);
         r3.appendChild(c3);
 
@@ -2602,30 +2572,17 @@ function renderTree() {
         r4.className = 'form-row';
         const l4 = document.createElement('div');
         l4.className = 'form-label';
-        l4.textContent = 'Эра';
+        l4.textContent = 'Персона (необязательно)';
         const c4 = document.createElement('div');
         const i4 = document.createElement('input');
         i4.className = 'form-input';
-        i4.placeholder = 'Например: «н. э.» (можно оставить пустым)';
+        i4.placeholder = 'Например: «Скарина»';
+        if (parent && parent.name) {
+          i4.value = parent.name;
+        }
         c4.appendChild(i4);
         r4.appendChild(l4);
         r4.appendChild(c4);
-
-        const r5 = document.createElement('div');
-        r5.className = 'form-row';
-        const l5 = document.createElement('div');
-        l5.className = 'form-label';
-        l5.textContent = 'Персона (необязательно)';
-        const c5 = document.createElement('div');
-        const i5 = document.createElement('input');
-        i5.className = 'form-input';
-        i5.placeholder = 'Например: «Скарина»';
-        if (parent && parent.name) {
-          i5.value = parent.name;
-        }
-        c5.appendChild(i5);
-        r5.appendChild(l5);
-        r5.appendChild(c5);
 
         const rowBtns = document.createElement('div');
         rowBtns.style.marginTop = '6px';
@@ -2633,19 +2590,11 @@ function renderTree() {
         btnAdd.className = 'btn btn-sm btn-primary';
         btnAdd.textContent = 'Добавить событие';
         btnAdd.onclick = () => {
-          const day = i3day.value.trim();
-          const month = i3month.value.trim();
-          let exact = '';
-          if (day || month) {
-            exact = day && month ? (day + ' ' + month) : (day || month);
-          }
-          addYearsCard(node.id, i1.value, i2.value, i4.value, i5.value, exact);
+          addYearsCard(node.id, i1.value, i2.value, i3.value, i4.value);
           i1.value = '';
           i2.value = '';
-          i3day.value = '';
-          i3month.value = '';
+          i3.value = '';
           i4.value = '';
-          i5.value = '';
           render();
         };
         rowBtns.appendChild(btnAdd);
@@ -2654,9 +2603,8 @@ function renderTree() {
         secAddBody.appendChild(r2);
         secAddBody.appendChild(r3);
         secAddBody.appendChild(r4);
-        secAddBody.appendChild(r5);
         secAddBody.appendChild(rowBtns);
-      } else if (node.factType === 'olist') {      } else if (node.factType === 'olist') {
+      } else if (node.factType === 'olist') {
         const r1 = document.createElement('div');
         r1.className = 'form-row';
         const l1 = document.createElement('div');
@@ -2757,7 +2705,7 @@ function renderTree() {
         table.className = 'card-table';
         const thead = document.createElement('thead');
         const trh = document.createElement('tr');
-        ['Факт', 'Управление', 'Порядок'].forEach(h => {
+        ['Факт', 'Управление'].forEach(h => {
           const th = document.createElement('th');
           th.textContent = h;
           trh.appendChild(th);
@@ -2766,7 +2714,7 @@ function renderTree() {
         table.appendChild(thead);
         const tbody = document.createElement('tbody');
 
-        cards.forEach((card, index) => {
+        cards.forEach(card => {
           const tr = document.createElement('tr');
           const tdText = document.createElement('td');
           const span = document.createElement('div');
@@ -2864,113 +2812,29 @@ function renderTree() {
               rowBtns.appendChild(colCancel);
               form.appendChild(rowBtns);
             } else if (node.factType === 'years') {
+              const fields = [
+                ['Событие', 'event', card.event || ''],
+                ['Год / период', 'timeRaw', card.timeRaw || ''],
+                ['Эра', 'era', card.era || ''],
+                ['Персона', 'person', card.person || '']
+              ];
               const inputs = {};
-
-              // Событие
-              {
-                const r = document.createElement('div');
-                r.className = 'form-row';
+              fields.forEach(([label, key, value]) => {
+                const rowF = document.createElement('div');
+                rowF.className = 'form-row';
                 const l = document.createElement('div');
                 l.className = 'form-label';
-                l.textContent = 'Событие';
+                l.textContent = label;
                 const c = document.createElement('div');
                 const inp = document.createElement('input');
                 inp.className = 'form-input';
-                inp.value = card.event || '';
+                inp.value = value;
                 c.appendChild(inp);
-                r.appendChild(l);
-                r.appendChild(c);
-                form.appendChild(r);
-                inputs.event = inp;
-              }
-
-              // Год / период
-              {
-                const r = document.createElement('div');
-                r.className = 'form-row';
-                const l = document.createElement('div');
-                l.className = 'form-label';
-                l.textContent = 'Год / период';
-                const c = document.createElement('div');
-                const inp = document.createElement('input');
-                inp.className = 'form-input';
-                inp.value = card.timeRaw || '';
-                c.appendChild(inp);
-                r.appendChild(l);
-                r.appendChild(c);
-                form.appendChild(r);
-                inputs.timeRaw = inp;
-              }
-
-              // Точная дата (необязательно): день + месяц
-              const rExact = document.createElement('div');
-              rExact.className = 'form-row';
-              const lExact = document.createElement('div');
-              lExact.className = 'form-label';
-              lExact.textContent = 'Точная дата (необязательно)';
-              const cExact = document.createElement('div');
-              const wrapExact = document.createElement('div');
-              wrapExact.className = 'date-exact-row';
-
-              const inpDay = document.createElement('input');
-              inpDay.className = 'form-input';
-              inpDay.type = 'number';
-              inpDay.min = '1';
-              inpDay.max = '31';
-              inpDay.placeholder = '1';
-
-              const inpMonth = document.createElement('input');
-              inpMonth.className = 'form-input';
-              inpMonth.placeholder = 'августа';
-
-              if (card.timeExact) {
-                const parts = String(card.timeExact).split(' ');
-                if (parts.length > 0) inpDay.value = parts[0];
-                if (parts.length > 1) inpMonth.value = parts.slice(1).join(' ');
-              }
-
-              wrapExact.appendChild(inpDay);
-              wrapExact.appendChild(inpMonth);
-              cExact.appendChild(wrapExact);
-              rExact.appendChild(lExact);
-              rExact.appendChild(cExact);
-              form.appendChild(rExact);
-
-              // Эра
-              {
-                const r = document.createElement('div');
-                r.className = 'form-row';
-                const l = document.createElement('div');
-                l.className = 'form-label';
-                l.textContent = 'Эра';
-                const c = document.createElement('div');
-                const inp = document.createElement('input');
-                inp.className = 'form-input';
-                inp.value = card.era || '';
-                c.appendChild(inp);
-                r.appendChild(l);
-                r.appendChild(c);
-                form.appendChild(r);
-                inputs.era = inp;
-              }
-
-              // Персона
-              {
-                const r = document.createElement('div');
-                r.className = 'form-row';
-                const l = document.createElement('div');
-                l.className = 'form-label';
-                l.textContent = 'Персона (необязательно)';
-                const c = document.createElement('div');
-                const inp = document.createElement('input');
-                inp.className = 'form-input';
-                inp.value = card.person || '';
-                c.appendChild(inp);
-                r.appendChild(l);
-                r.appendChild(c);
-                form.appendChild(r);
-                inputs.person = inp;
-              }
+                rowF.appendChild(l);
+                rowF.appendChild(c);
+                form.appendChild(rowF);
+                inputs[key] = inp;
+              });
 
               const rowBtns = document.createElement('div');
               rowBtns.className = 'row';
@@ -2981,18 +2845,11 @@ function renderTree() {
               btnSave.className = 'btn btn-sm btn-primary btn-full';
               btnSave.textContent = 'Сохранить';
               btnSave.onclick = () => {
-                const day = inpDay.value.trim();
-                const month = inpMonth.value.trim();
-                let exact = '';
-                if (day || month) {
-                  exact = day && month ? (day + ' ' + month) : (day || month);
-                }
                 updateCard(node.id, card.id, {
                   event: inputs.event.value,
                   timeRaw: inputs.timeRaw.value,
                   era: inputs.era.value,
-                  person: inputs.person.value,
-                  timeExact: exact
+                  person: inputs.person.value
                 });
                 render();
               };
@@ -3009,7 +2866,7 @@ function renderTree() {
               rowBtns.appendChild(colSave);
               rowBtns.appendChild(colCancel);
               form.appendChild(rowBtns);
-            } else if (node.factType === 'olist') {} else if (node.factType === 'olist') {
+            } else if (node.factType === 'olist') {
               const rowF = document.createElement('div');
               rowF.className = 'form-row';
               const l = document.createElement('div');
@@ -3119,34 +2976,6 @@ function renderTree() {
 
           tr.appendChild(tdText);
           tr.appendChild(tdActions);
-
-          const tdOrder = document.createElement('td');
-          const orderWrap = document.createElement('div');
-          orderWrap.className = 'card-order-controls';
-
-          const btnUp = document.createElement('button');
-          btnUp.className = 'btn btn-sm btn-ghost';
-          btnUp.textContent = '↑';
-          if (index === 0) btnUp.disabled = true;
-          btnUp.onclick = () => {
-            moveCard(node.id, card.id, 'up');
-            render();
-          };
-
-          const btnDown = document.createElement('button');
-          btnDown.className = 'btn btn-sm btn-ghost';
-          btnDown.textContent = '↓';
-          if (index === cards.length - 1) btnDown.disabled = true;
-          btnDown.onclick = () => {
-            moveCard(node.id, card.id, 'down');
-            render();
-          };
-
-          orderWrap.appendChild(btnUp);
-          orderWrap.appendChild(btnDown);
-          tdOrder.appendChild(orderWrap);
-          tr.appendChild(tdOrder);
-
           tbody.appendChild(tr);
         });
 
