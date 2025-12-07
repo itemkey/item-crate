@@ -1955,14 +1955,11 @@ function deleteCard(nodeId, cardId) {
         res = exact;
       }
 
-      const era = (card.era || '').trim();
-
-      // Если указана ЭРА (кроме «н. э.»), то не добавляем «г.»/«гг.»,
-      // чтобы получить, например, «14 век», а не «14 г. век».
-      if (raw && (!era || era === 'н. э.')) {
+      if (raw) {
         res += hasDash ? ' гг.' : ' г.';
       }
 
+      const era = (card.era || '').trim();
       if (era && era !== 'н. э.') {
         res += ' ' + era;
       }
