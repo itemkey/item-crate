@@ -1851,18 +1851,7 @@ body {
       saveState();
     }
 
-    
-    function updateCard(nodeId, cardId, patch) {
-      const node = getNode(nodeId);
-      if (!node || node.type !== 'characteristic') return;
-      const cards = node.cards || [];
-      const card = cards.find(c => c.id === cardId);
-      if (!card) return;
-      Object.assign(card, patch);
-      saveState();
-    }
-
-function deleteCard(nodeId, cardId) {
+    function deleteCard(nodeId, cardId) {
       const node = getNode(nodeId);
       if (!node || node.type !== 'characteristic') return;
       node.cards = (node.cards || []).filter(c => c.id !== cardId);
@@ -2677,27 +2666,7 @@ function renderTree() {
         i3month.placeholder = 'августа';
         i3month.addEventListener('input', () => {
           i3month.value = i3month.value.replace(/[0-9]/g, '');
-          const maxDay = getMaxDaysForMonth(i3month.value.trim());
-          i3day.max = String(maxDay);
-          const cur = Number(i3day.value);
-          if (cur > maxDay) {
-            i3day.value = maxDay ? String(maxDay) : '';
-          }
         });
-
-        i3day.addEventListener('input', () => {
-          const month = i3month.value.trim();
-          const maxDay = month ? getMaxDaysForMonth(month) : 31;
-          let val = Number(i3day.value);
-          if (!val) {
-            i3day.value = '';
-            return;
-          }
-          if (val < 1) val = 1;
-          if (val > maxDay) val = maxDay;
-          i3day.value = String(val);
-        });
-
         dateWrap.appendChild(i3day);
         dateWrap.appendChild(i3month);
         c3.appendChild(dateWrap);
@@ -2751,14 +2720,8 @@ function renderTree() {
 
           const day = i3day.value.trim();
           const month = i3month.value.trim();
-
-          if (day && !month) {
-            alert('Если указываешь число дня, укажи и месяц.');
-            return;
-          }
-
-          if (day) {
-            const maxDay = month ? getMaxDaysForMonth(month) : 31;
+          if (day && month) {
+            const maxDay = getMaxDaysForMonth(month);
             const dayNum = Number(day);
             if (dayNum < 1 || dayNum > maxDay) {
               alert('В этом месяце не может быть дня «' + day + '». Максимум: ' + maxDay + '.');
@@ -2925,12 +2888,7 @@ function renderTree() {
           };
 
           btnEdit.onclick = () => {
-            // не даём открыть несколько форм редактирования для одного факта
-            const existing = tdText.querySelector('.fact-edit-container');
-            if (existing) existing.remove();
-
             const editContainer = document.createElement('div');
-            editContainer.className = 'fact-edit-container';
             editContainer.style.marginTop = '6px';
             const hr = document.createElement('hr');
             hr.style.border = 'none';
@@ -3061,28 +3019,8 @@ function renderTree() {
               const inpMonth = document.createElement('input');
               inpMonth.className = 'form-input';
               inpMonth.placeholder = 'августа';
-
               inpMonth.addEventListener('input', () => {
                 inpMonth.value = inpMonth.value.replace(/[0-9]/g, '');
-                const maxDay = getMaxDaysForMonth(inpMonth.value.trim());
-                inpDay.max = String(maxDay);
-                const cur = Number(inpDay.value);
-                if (cur > maxDay) {
-                  inpDay.value = maxDay ? String(maxDay) : '';
-                }
-              });
-
-              inpDay.addEventListener('input', () => {
-                const month = inpMonth.value.trim();
-                const maxDay = month ? getMaxDaysForMonth(month) : 31;
-                let val = Number(inpDay.value);
-                if (!val) {
-                  inpDay.value = '';
-                  return;
-                }
-                if (val < 1) val = 1;
-                if (val > maxDay) val = maxDay;
-                inpDay.value = String(val);
               });
 
               if (card.timeExact) {
@@ -3155,14 +3093,8 @@ function renderTree() {
 
                 const day = inpDay.value.trim();
                 const month = inpMonth.value.trim();
-
-                if (day && !month) {
-                  alert('Если указываешь число дня, укажи и месяц.');
-                  return;
-                }
-
-                if (day) {
-                  const maxDay = month ? getMaxDaysForMonth(month) : 31;
+                if (day && month) {
+                  const maxDay = getMaxDaysForMonth(month);
                   const dayNum = Number(day);
                   if (dayNum < 1 || dayNum > maxDay) {
                     alert('В этом месяце не может быть дня «' + day + '». Максимум: ' + maxDay + '.');
