@@ -444,10 +444,9 @@
       font-size: 11px;
       text-transform: uppercase;
       letter-spacing: 0.12em;
-      white-space: normal;
-      overflow: visible;
-      text-overflow: clip;
-      word-break: break-word;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .sidebar-tree-wrapper {
@@ -1872,81 +1871,11 @@ body {
 
     // ===== UTILS =====
 
-    function isValidYearOrPeriod(str) {
-      const s = (str || '').trim();
-      if (!s) return false;
-      const single = /^\d{1,4}$/;
-      const range = /^(\d{1,4})\s*[-–—]\s*(\d{1,4})$/;
-      return single.test(s) || range.test(s);
-    }
-
-    function normalizeMonthName(monthRaw) {
-      const m = (monthRaw || '').toLowerCase().trim();
-      if (!m) return '';
-      // оставляем только буквы (латиница + кириллица)
-      const s = m.normalize('NFD').replace(/[^a-zа-яё]+/g, '');
-      return s;
-    }
-
-    function getMaxDaysForMonth(monthRaw) {
-      const m = normalizeMonthName(monthRaw);
-      if (!m) return 31;
-      const ru = {
-        'январь': 31, 'января': 31,
-        'февраль': 28, 'февраля': 28,
-        'март': 31, 'марта': 31,
-        'апрель': 30, 'апреля': 30,
-        'май': 31, 'мая': 31,
-        'июнь': 30, 'июня': 30,
-        'июль': 31, 'июля': 31,
-        'август': 31, 'августа': 31,
-        'сентябрь': 30, 'сентября': 30,
-        'октябрь': 31, 'октября': 31,
-        'ноябрь': 30, 'ноября': 30,
-        'декабрь': 31, 'декабря': 31
-      };
-      if (ru[m] != null) return ru[m];
-      const en = {
-        'january': 31,
-        'february': 28,
-        'march': 31,
-        'april': 30,
-        'may': 31,
-        'june': 30,
-        'july': 31,
-        'august': 31,
-        'september': 30,
-        'october': 31,
-        'november': 30,
-        'december': 31
-      };
-      if (en[m] != null) return en[m];
-      return 31;
-    }
-
     function formatYears(card) {
       const raw = (card.timeRaw || '').trim();
-      const exact = (card.timeExact || '').trim();
-      if (!raw && !exact) return '';
-
-      const hasDash =
-        raw.includes('-') || raw.includes('–') || raw.includes('—');
-
-      let res = '';
-      if (exact && raw && !hasDash) {
-        // классический кейс: «14 августа 1385 г.»
-        res = exact + ' ' + raw;
-      } else if (raw) {
-        res = raw;
-      } else {
-        // вдруг указана только точная дата без года
-        res = exact;
-      }
-
-      if (raw) {
-        res += hasDash ? ' гг.' : ' г.';
-      }
-
+      if (!raw) return '';
+      const suffix = raw.includes('-') ? ' гг.' : ' г.';
+      let res = raw + suffix;
       const era = (card.era || '').trim();
       if (era && era !== 'н. э.') {
         res += ' ' + era;
@@ -2663,9 +2592,6 @@ function renderTree() {
         const i3month = document.createElement('input');
         i3month.className = 'form-input';
         i3month.placeholder = 'августа';
-        i3month.addEventListener('input', () => {
-          i3month.value = i3month.value.replace(/[0-9]/g, '');
-        });
         dateWrap.appendChild(i3day);
         dateWrap.appendChild(i3month);
         c3.appendChild(dateWrap);
@@ -2707,32 +2633,13 @@ function renderTree() {
         btnAdd.className = 'btn btn-sm btn-primary';
         btnAdd.textContent = 'Добавить событие';
         btnAdd.onclick = () => {
-          const raw = (i2.value || '').trim();
-          if (!raw) {
-            alert('Сначала укажи год или период.');
-            return;
-          }
-          if (!isValidYearOrPeriod(raw)) {
-            alert('Год / период должен быть в формате «1385» или «1385-1386».');
-            return;
-          }
-
           const day = i3day.value.trim();
           const month = i3month.value.trim();
-          if (day && month) {
-            const maxDay = getMaxDaysForMonth(month);
-            const dayNum = Number(day);
-            if (dayNum < 1 || dayNum > maxDay) {
-              alert('В этом месяце не может быть дня «' + day + '». Максимум: ' + maxDay + '.');
-              return;
-            }
-          }
-
           let exact = '';
           if (day || month) {
             exact = day && month ? (day + ' ' + month) : (day || month);
           }
-          addYearsCard(node.id, i1.value, raw, i4.value, i5.value, exact);
+          addYearsCard(node.id, i1.value, i2.value, i4.value, i5.value, exact);
           i1.value = '';
           i2.value = '';
           i3day.value = '';
@@ -2988,9 +2895,6 @@ function renderTree() {
                 const inp = document.createElement('input');
                 inp.className = 'form-input';
                 inp.value = card.timeRaw || '';
-                inp.addEventListener('input', () => {
-                  inp.value = inp.value.replace(/[^0-9\-–—]/g, '');
-                });
                 c.appendChild(inp);
                 r.appendChild(l);
                 r.appendChild(c);
@@ -3018,9 +2922,6 @@ function renderTree() {
               const inpMonth = document.createElement('input');
               inpMonth.className = 'form-input';
               inpMonth.placeholder = 'августа';
-              inpMonth.addEventListener('input', () => {
-                inpMonth.value = inpMonth.value.replace(/[0-9]/g, '');
-              });
 
               if (card.timeExact) {
                 const parts = String(card.timeExact).split(' ');
@@ -3080,34 +2981,15 @@ function renderTree() {
               btnSave.className = 'btn btn-sm btn-primary btn-full';
               btnSave.textContent = 'Сохранить';
               btnSave.onclick = () => {
-                const raw = (inputs.timeRaw.value || '').trim();
-                if (!raw) {
-                  alert('Сначала укажи год или период.');
-                  return;
-                }
-                if (!isValidYearOrPeriod(raw)) {
-                  alert('Год / период должен быть в формате «1385» или «1385-1386».');
-                  return;
-                }
-
                 const day = inpDay.value.trim();
                 const month = inpMonth.value.trim();
-                if (day && month) {
-                  const maxDay = getMaxDaysForMonth(month);
-                  const dayNum = Number(day);
-                  if (dayNum < 1 || dayNum > maxDay) {
-                    alert('В этом месяце не может быть дня «' + day + '». Максимум: ' + maxDay + '.');
-                    return;
-                  }
-                }
-
                 let exact = '';
                 if (day || month) {
                   exact = day && month ? (day + ' ' + month) : (day || month);
                 }
                 updateCard(node.id, card.id, {
                   event: inputs.event.value,
-                  timeRaw: raw,
+                  timeRaw: inputs.timeRaw.value,
                   era: inputs.era.value,
                   person: inputs.person.value,
                   timeExact: exact
