@@ -414,7 +414,7 @@
     #appRoot {
       flex: 1;
       display: grid;
-      grid-template-columns: 96px 260px 6px minmax(0, 1fr);
+      grid-template-columns: 96px 280px minmax(0, 1fr);
       gap: 32px;
     }
 
@@ -426,10 +426,6 @@
       flex-direction: column;
       gap: 8px;
       align-items: stretch;
-      background: #050505;
-      border-radius: 8px;
-      padding-top: 6px;
-      padding-bottom: 6px;
     }
 
     .rootbar-top {
@@ -489,9 +485,7 @@
       border-radius: 6px;
       border: 1px solid transparent;
       cursor: pointer;
-      line-height: 1.35;
-      margin-bottom: 4px;
-      word-break: break-word;
+      line-height: 1.2;
     }
 
     .rootbar-item:hover {
@@ -506,9 +500,7 @@
 
     .rootbar-item-label {
       display: block;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      word-break: break-word;
     }
 
 
@@ -519,29 +511,6 @@
       flex-direction: column;
       height: 100%;
     }
-    .sidebar-resizer {
-      cursor: col-resize;
-      align-self: stretch;
-      position: relative;
-      /* невидимая зона для захвата мышью */
-    }
-
-    .sidebar-resizer::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      /* не рисуем отдельную линию — тянем за уже существующую границу корней */
-      border-left: none;
-    }
-
-    body.resizing {
-      cursor: col-resize;
-      user-select: none;
-    }
-
 
     .sidebar-top {
       display: flex;
@@ -690,12 +659,11 @@
       font-size: 16px;
       text-transform: uppercase;
       display: inline-block;
-      transform: scaleY(1.3);
+      transform: scaleY(1.4);
       transform-origin: center;
       letter-spacing: 0.14em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      word-break: break-word;
     }
 
     .hier-row-current .hier-name {
@@ -967,12 +935,10 @@
     }
 
     #appRoot.sidebar-collapsed {
-      grid-template-columns: minmax(0, 1fr);
+      grid-template-columns: 96px minmax(0, 1fr);
     }
 
-    #appRoot.sidebar-collapsed .rootbar,
-    #appRoot.sidebar-collapsed .sidebar,
-    #appRoot.sidebar-collapsed .sidebar-resizer {
+    #appRoot.sidebar-collapsed .sidebar {
       display: none;
     }
 
@@ -1198,9 +1164,6 @@
       #appRoot {
         grid-template-columns: minmax(0, 1fr);
       }
-      .sidebar-resizer {
-        display: none;
-      }
       .sidebar {
         border-right: none;
         border-bottom: 2px dashed #fff;
@@ -1249,10 +1212,6 @@ body {
   grid-template-columns: minmax(0, 1fr);
 }
 
-#appRoot.sidebar-collapsed .rootbar {
-  display: none;
-}
-
 .hier-header {
   display: flex;
   align-items: center;
@@ -1296,14 +1255,10 @@ body {
 
 .hier-row-category {
   color: #ffffff;
-  /* визуальный маркер: это "папка-отсек" */
-  border-left: 2px solid #ffffff;
 }
 
 .hier-row-characteristic {
   color: #c9c9c9;
-  /* визуальный маркер: это паттерн с фактами */
-  border-left: 2px dashed #555555;
 }
 
 .hier-toggle {
@@ -1366,11 +1321,9 @@ body {
     .hier-row {
       padding: 4px 6px;
       border-radius: 6px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       cursor: pointer;
       transition: background 0.12s ease-out, border-color 0.12s ease-out;
-      align-items: flex-start;
-      line-height: 1.4;
     }
 
     .hier-row:hover {
@@ -1406,17 +1359,14 @@ body {
     }
 
     .hier-name {
-      /* название отсека / паттерна в одну строку с троеточием */
-      font-size: 12px;
+      font-size: 14px;
       text-transform: uppercase;
       display: inline-block;
-      transform: scaleY(1.25);
+      transform: scaleY(1.4);
       transform-origin: center;
       letter-spacing: 0.14em;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
+      white-space: normal;
+      word-break: break-word;
     }
 
     .sidebar-legend {
@@ -1569,7 +1519,6 @@ body {
             </div>
           </div>
         </aside>
-        <div id="sidebarResizer" class="sidebar-resizer"></div>
 
         <section class="main-panel">
           <div class="main-header-line">
@@ -1918,54 +1867,6 @@ body {
     const btnCreateCancel = document.getElementById('btnCreateCancel');
     const btnCreateConfirm = document.getElementById('btnCreateConfirm');
     const btnImportInCreate = document.getElementById('btnImportInCreate');
-
-    const appRootEl = document.getElementById('appRoot');
-    const sidebarEl = document.querySelector('.sidebar');
-    const sidebarResizerEl = document.getElementById('sidebarResizer');
-    let sidebarIsResizing = false;
-    let sidebarStartX = 0;
-    let sidebarStartWidth = 0;
-    const SIDEBAR_MIN_WIDTH = 200;
-    const SIDEBAR_MAX_WIDTH = 600;
-
-    if (sidebarResizerEl && appRootEl && sidebarEl) {
-      const applySidebarWidth = (w) => {
-        window.__sidebarWidthPx = w;
-        appRootEl.style.gridTemplateColumns = `96px ${w}px 6px minmax(0, 1fr)`;
-      };
-
-      const initialRect = sidebarEl.getBoundingClientRect();
-      if (initialRect.width) {
-        applySidebarWidth(initialRect.width);
-      }
-
-      sidebarResizerEl.addEventListener('mousedown', (e) => {
-        e.preventDefault();
-        sidebarIsResizing = true;
-        sidebarStartX = e.clientX;
-        sidebarStartWidth = sidebarEl.getBoundingClientRect().width;
-        document.body.classList.add('resizing');
-        document.addEventListener('mousemove', onSidebarResizeMove);
-        document.addEventListener('mouseup', onSidebarResizeEnd);
-      });
-
-      function onSidebarResizeMove(e) {
-        if (!sidebarIsResizing) return;
-        let newWidth = sidebarStartWidth + (e.clientX - sidebarStartX);
-        if (newWidth < SIDEBAR_MIN_WIDTH) newWidth = SIDEBAR_MIN_WIDTH;
-        if (newWidth > SIDEBAR_MAX_WIDTH) newWidth = SIDEBAR_MAX_WIDTH;
-        applySidebarWidth(newWidth);
-      }
-
-      function onSidebarResizeEnd() {
-        if (!sidebarIsResizing) return;
-        sidebarIsResizing = false;
-        document.body.classList.remove('resizing');
-        document.removeEventListener('mousemove', onSidebarResizeMove);
-        document.removeEventListener('mouseup', onSidebarResizeEnd);
-      }
-    }
-
 
     // ===== DATA MODEL =====
 
@@ -4797,29 +4698,7 @@ function attachSectionToggles(wrapper) {
         sidebarToggleFixed.addEventListener('click', function () {
           const appRoot = document.getElementById('appRoot');
           if (!appRoot) return;
-
           const collapsed = appRoot.classList.toggle('sidebar-collapsed');
-
-          if (collapsed) {
-            // запомним ширину и очистим инлайн-стиль, чтобы сработали CSS-правила
-            if (typeof window.__sidebarWidthPx === 'undefined') {
-              const sidebar = document.querySelector('.sidebar');
-              if (sidebar) {
-                window.__sidebarWidthPx = sidebar.getBoundingClientRect().width;
-              }
-            }
-            appRoot.dataset.prevGridTemplate = appRoot.style.gridTemplateColumns || '';
-            appRoot.style.gridTemplateColumns = '';
-          } else {
-            // вернём пользовательскую ширину, если она была
-            const w = window.__sidebarWidthPx;
-            if (w && !isNaN(w)) {
-              appRoot.style.gridTemplateColumns = `96px ${w}px 6px minmax(0, 1fr)`;
-            } else if (appRoot.dataset.prevGridTemplate) {
-              appRoot.style.gridTemplateColumns = appRoot.dataset.prevGridTemplate;
-            }
-          }
-
           sidebarToggleFixed.textContent = collapsed ? '▶' : '◀';
         });
       }
