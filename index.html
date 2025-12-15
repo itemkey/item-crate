@@ -1583,6 +1583,16 @@ body {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
+    /* === Search highlight (как Ctrl+F) === */
+    mark.search-highlight{
+      background: rgba(255, 0, 0, 0.14);
+      color: inherit;
+      padding: 0 1px;
+      border-bottom: 2px solid rgba(255, 0, 0, 0.95);
+      border-radius: 2px;
+    }
+
 </style>
 </head>
 <body>
@@ -4917,7 +4927,7 @@ function attachSectionToggles(wrapper) {
       });
     }
 
-    // ===== ГЛОБАЛЬНЫЙ ПОИСК ПО САЙТУ =====
+        // ===== ГЛОБАЛЬНЫЙ ПОИСК ПО САЙТУ =====
     const globalSearchInputEl = document.getElementById('globalSearchInput');
     const globalSearchResultsEl = document.getElementById('globalSearchResults');
 
@@ -4925,14 +4935,146 @@ function attachSectionToggles(wrapper) {
       return (str || '')
         .toString()
         .toLowerCase()
+        .replace(/ё/g, 'е')
+        .replace(/э/g, 'е')
         .replace(/\s+/g, ' ')
         .trim();
+    }
+
+    function tokenizeForSearch(str) {
+      const s = normalizeTextForSearch(str);
+      const m = s.match(/[a-zа-я0-9]+/g);
+      return m ? m : [];
+    }
+
+    // Очень лёгкий "стеммер" под русские окончания (для примера: цехИ ~ цехА)
+    function ruStem(word) {
+      const w = normalizeTextForSearch(word);
+      if (w.length <= 3) return w;
+
+      // Чем длиннее окончание, тем раньше проверяем
+      const endings = [
+        'иями','ями','ами',
+        'ого','его','ому','ему',
+        'ыми','ими',
+        'ах','ях',
+        'ов','ев','ёв',
+        'ам','ям',
+        'ая','яя',
+        'ое','ее',
+        'ую','юю',
+        'ый','ий',
+        'ые','ие',
+        'а','я','ы','и','е','о','у','ю','ь','й'
+      ];
+
+      for (const end of endings) {
+        if (w.endsWith(end) && w.length - end.length >= 3) {
+          return w.slice(0, -end.length);
+        }
+      }
+      return w;
+    }
+
+    function trigrams(s) {
+      const t = normalizeTextForSearch(s);
+      const out = new Set();
+      if (t.length <= 2) {
+        out.add(t);
+        return out;
+      }
+      for (let i = 0; i < t.length - 2; i++) {
+        out.add(t.slice(i, i + 3));
+      }
+      return out;
+    }
+
+    function jaccard(a, b) {
+      if (!a.size && !b.size) return 1;
+      let inter = 0;
+      for (const x of a) if (b.has(x)) inter++;
+      const union = a.size + b.size - inter;
+      return union ? inter / union : 0;
+    }
+
+    // Ограниченный Левенштейн (быстро и достаточно для "цеха"~"цехи")
+    function levenshtein(a, b, maxDist) {
+      a = normalizeTextForSearch(a);
+      b = normalizeTextForSearch(b);
+      if (a === b) return 0;
+      if (!a || !b) return Math.max(a.length, b.length);
+      if (Math.abs(a.length - b.length) > maxDist) return maxDist + 1;
+
+      const v0 = new Array(b.length + 1);
+      const v1 = new Array(b.length + 1);
+
+      for (let i = 0; i <= b.length; i++) v0[i] = i;
+
+      for (let i = 0; i < a.length; i++) {
+        v1[0] = i + 1;
+        let rowMin = v1[0];
+
+        for (let j = 0; j < b.length; j++) {
+          const cost = a[i] === b[j] ? 0 : 1;
+          v1[j + 1] = Math.min(
+            v1[j] + 1,
+            v0[j + 1] + 1,
+            v0[j] + cost
+          );
+          if (v1[j + 1] < rowMin) rowMin = v1[j + 1];
+        }
+
+        if (rowMin > maxDist) return maxDist + 1;
+
+        for (let j = 0; j <= b.length; j++) v0[j] = v1[j];
+      }
+      return v0[b.length];
+    }
+
+    function fuzzyTermInText(term, textNorm, tokens) {
+      const t = normalizeTextForSearch(term);
+      if (!t) return false;
+
+      // 1) точное вхождение (быстро)
+      if (textNorm.includes(t)) return true;
+
+      // 2) сравнение по словам
+      const tStem = ruStem(t);
+      const tTri = trigrams(tStem);
+      const tLen = t.length;
+
+      for (const w of tokens) {
+        if (!w) continue;
+
+        // быстрые совпадения по префиксу
+        if (w.startsWith(t) || t.startsWith(w)) {
+          if (Math.min(w.length, tLen) >= 3) return true;
+        }
+
+        const wStem = ruStem(w);
+
+        // совпадение стемов
+        if (wStem === tStem && wStem.length >= 3) return true;
+
+        // близость по Левенштейну (короткие слова)
+        const maxDist = tLen <= 6 ? 1 : (tLen <= 10 ? 2 : 0);
+        if (maxDist) {
+          const d = levenshtein(wStem, tStem, maxDist);
+          if (d <= maxDist) return true;
+        }
+
+        // "похожесть" по триграммам (для чуть более сложных случаев)
+        const sim = jaccard(tTri, trigrams(wStem));
+        if (sim >= 0.45 && Math.min(wStem.length, tStem.length) >= 4) return true;
+      }
+
+      return false;
     }
 
     function buildNodeFullText(node) {
       if (!node) return '';
       let parts = [node.name || ''];
-      // Собираем текст из карточек, чтобы поиск "додумывал" по содержимому
+      // Собираем текст из карточек, чтобы поиск находил и по содержимому
       if (node.cards && node.cards.length) {
         (node.cards || []).forEach(card => {
           parts.push(formatFactDisplay(node, card));
@@ -4964,7 +5106,9 @@ function attachSectionToggles(wrapper) {
       if (!query) return [];
       const normQ = normalizeTextForSearch(query);
       if (!normQ) return [];
-      const terms = normQ.split(' ').filter(Boolean);
+
+      // разбиваем на слова, убираем слишком короткие
+      const terms = tokenizeForSearch(normQ).filter(t => t.length >= 2);
       if (!terms.length) return [];
 
       const nodes = state && state.nodes ? Object.values(state.nodes) : [];
@@ -4974,14 +5118,25 @@ function attachSectionToggles(wrapper) {
         const text = buildNodeFullText(node);
         if (!text) return;
 
-        const ok = terms.every(t => text.includes(t));
+        const tokens = tokenizeForSearch(text);
+
+        // "умное" совпадение: каждый термин должен быть найден приблизительно
+        const ok = terms.every(t => fuzzyTermInText(t, text, tokens));
         if (!ok) return;
 
+        // скоринг: точные совпадения выше, но fuzzy тоже учитываем
         let score = 0;
+        const nameNorm = normalizeTextForSearch(node.name || '');
+        const nameTokens = tokenizeForSearch(nameNorm);
+
         terms.forEach(t => {
+          if (nameNorm.includes(t)) score += 8;
           if (text.startsWith(t)) score += 3;
           if (text.includes(' ' + t)) score += 2;
-          if (node.name && normalizeTextForSearch(node.name).includes(t)) score += 5;
+
+          // бонус за совпадение по стему в названии
+          const st = ruStem(t);
+          if (st.length >= 3 && nameTokens.some(w => ruStem(w) === st)) score += 4;
         });
 
         results.push({
@@ -5053,8 +5208,13 @@ function attachSectionToggles(wrapper) {
     if (globalSearchInputEl) {
       globalSearchInputEl.addEventListener('input', () => {
         const q = globalSearchInputEl.value;
+        __activeSearchHighlight = (q || '').trim();
+        // подсветка в текущем экране (без перехода)
+        applyActiveSearchHighlight();
         if (!q || q.trim().length < 2) {
           renderGlobalSearchResults([]);
+           __activeSearchHighlight = '';
+           applyActiveSearchHighlight();
           return;
         }
         const results = runGlobalSearch(q);
@@ -5065,6 +5225,8 @@ function attachSectionToggles(wrapper) {
         if (e.key === 'Escape') {
           globalSearchInputEl.value = '';
           renderGlobalSearchResults([]);
+           __activeSearchHighlight = '';
+           applyActiveSearchHighlight();
         }
       });
     }
@@ -5080,6 +5242,161 @@ function attachSectionToggles(wrapper) {
       globalSearchResultsEl.style.display = 'none';
     });
 
+
+    // ===== ПОДСВЕТКА НАЙДЕННОГО ТЕКСТА (как Ctrl+F) =====
+    let __activeSearchHighlight = '';
+
+    function escapeRegExp(str) {
+      return (str || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    function buildHighlightRegex(terms) {
+      const parts = (terms || [])
+        .map(t => normalizeTextForSearch(t))
+        .filter(Boolean)
+        .map(t => escapeRegExp(t).replace(/ё/g, '[её]').replace(/е/g, '[её]'));
+
+      if (!parts.length) return null;
+      return new RegExp('(' + parts.join('|') + ')', 'gi');
+    }
+
+    function clearSearchHighlights(rootEl) {
+      const root = rootEl || document;
+      const marks = root.querySelectorAll('mark.search-highlight');
+      marks.forEach(m => {
+        const parent = m.parentNode;
+        if (!parent) return;
+        parent.replaceChild(document.createTextNode(m.textContent || ''), m);
+        parent.normalize();
+      });
+    }
+
+    function highlightInElement(rootEl, query) {
+      const root = rootEl;
+      if (!root) return;
+
+      clearSearchHighlights(root);
+
+      const q = (query || '').trim();
+      if (!q || q.length < 2) return;
+
+      const terms = tokenizeForSearch(q).filter(t => t.length >= 2);
+      if (!terms.length) return;
+
+      function fuzzyWordMatch(term, word) {
+        const t = normalizeTextForSearch(term);
+        const w = normalizeTextForSearch(word);
+        if (!t || !w) return false;
+
+        // точное / частичное
+        if (w === t) return true;
+        if ((w.includes(t) || t.includes(w)) && Math.min(w.length, t.length) >= 3) return true;
+
+        const tStem = ruStem(t);
+        const wStem = ruStem(w);
+
+        // совпадение стемов
+        if (tStem === wStem && tStem.length >= 3) return true;
+
+        // Левенштейн для коротких слов
+        const maxDist = t.length <= 6 ? 1 : (t.length <= 10 ? 2 : 0);
+        if (maxDist) {
+          const d = levenshtein(wStem, tStem, maxDist);
+          if (d <= maxDist) return true;
+        }
+
+        // триграммы для чуть более сложных случаев
+        const sim = jaccard(trigrams(tStem), trigrams(wStem));
+        if (sim >= 0.45 && Math.min(wStem.length, tStem.length) >= 4) return true;
+
+        return false;
+      }
+
+      const wordRe = /[A-Za-zА-Яа-яЁёЭэ0-9]+/g;
+
+      const walker = document.createTreeWalker(
+        root,
+        NodeFilter.SHOW_TEXT,
+        {
+          acceptNode: function (node) {
+            if (!node || !node.nodeValue) return NodeFilter.FILTER_REJECT;
+            const parent = node.parentNode;
+            if (!parent) return NodeFilter.FILTER_REJECT;
+            const tag = (parent.tagName || '').toLowerCase();
+            if (tag === 'script' || tag === 'style' || tag === 'mark') return NodeFilter.FILTER_REJECT;
+            if (tag === 'input' || tag === 'textarea') return NodeFilter.FILTER_REJECT;
+            if (parent.closest && parent.closest('mark.search-highlight')) return NodeFilter.FILTER_REJECT;
+
+            const raw = node.nodeValue;
+            if (!raw || !raw.trim()) return NodeFilter.FILTER_REJECT;
+
+            const norm = normalizeTextForSearch(raw);
+            const tokens = tokenizeForSearch(norm);
+            // Если хотя бы один термин приблизительно встречается в этой строке — обрабатываем её.
+            const ok = terms.some(t => fuzzyTermInText(t, norm, tokens));
+            return ok ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+          }
+        },
+        false
+      );
+
+      const textNodes = [];
+      let n;
+      while ((n = walker.nextNode())) textNodes.push(n);
+
+      textNodes.forEach(node => {
+        const txt = node.nodeValue;
+        if (!txt) return;
+
+        wordRe.lastIndex = 0;
+        let m;
+        let lastIdx = 0;
+        let changed = false;
+        const frag = document.createDocumentFragment();
+
+        while ((m = wordRe.exec(txt))) {
+          const idx = m.index;
+          const word = m[0];
+
+          if (idx > lastIdx) frag.appendChild(document.createTextNode(txt.slice(lastIdx, idx)));
+
+          const shouldMark = terms.some(t => fuzzyWordMatch(t, word));
+          if (shouldMark) {
+            changed = true;
+            const mark = document.createElement('mark');
+            mark.className = 'search-highlight';
+            mark.textContent = word;
+            frag.appendChild(mark);
+          } else {
+            frag.appendChild(document.createTextNode(word));
+          }
+
+          lastIdx = idx + word.length;
+        }
+
+        if (!changed) return; // ничего не подсветили
+
+        if (lastIdx < txt.length) frag.appendChild(document.createTextNode(txt.slice(lastIdx)));
+
+        if (node.parentNode) node.parentNode.replaceChild(frag, node);
+      });
+
+      const first = root.querySelector('mark.search-highlight');
+      if (first && first.scrollIntoView) {
+        try {
+          first.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
+        } catch (e) {
+          first.scrollIntoView(true);
+        }
+      }
+    }
+
+    function applyActiveSearchHighlight() {
+      // подсвечиваем только в правой панели (детали), чтобы не ломать иерархию
+      highlightInElement(detailsRootEl, __activeSearchHighlight);
+    }
+
+
 // ===== MAIN RENDER =====
 
     function render() {
@@ -5087,6 +5404,7 @@ function attachSectionToggles(wrapper) {
       renderRootbar();
       renderTree();
       renderDetails();
+      applyActiveSearchHighlight();
     }
 
     render();
