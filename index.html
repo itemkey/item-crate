@@ -1774,6 +1774,7 @@ body {
         <div class="quiz-message" id="quizMessage"></div>
         <div style="display:flex;gap:8px;">
           <button class="btn btn-sm btn-ghost" id="btnQuizRestart">ЗАНОВО</button>
+          <button class="btn btn-sm btn-ghost" id="btnQuizClarify">УТОЧНИТЬ</button>
           <button class="btn btn-sm btn-ghost btn-hidden" id="btnQuizNext">Дальше</button>
           <button class="btn btn-sm btn-danger" id="btnQuizExit">Выйти</button>
         </div>
@@ -2663,7 +2664,33 @@ function renderTree() {
         render();
       }
     };
-    left.appendChild(backBtn);
+    
+    // Можно «вытащить» паттерн/отсек на уровень выше: перетяни на «← НАЗАД»
+    backBtn.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      backBtn.classList.add('hier-row-drop-inside');
+      if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
+    });
+    backBtn.addEventListener('dragleave', () => {
+      backBtn.classList.remove('hier-row-drop-inside');
+    });
+    backBtn.addEventListener('drop', (e) => {
+      e.preventDefault();
+      backBtn.classList.remove('hier-row-drop-inside');
+      const draggedId = dragNodeId;
+      dragNodeId = null;
+      dragOverMode = null;
+      const parent = getNode(viewNode.parentId);
+      if (!draggedId || !parent) return;
+      // переносим узел на уровень выше (в родителя текущего отсека)
+      moveNode(draggedId, parent.id, null);
+      // остаёмся в текущем «родительском» экране
+      sidebarViewNodeId = parent.id;
+      currentNodeId = draggedId;
+      render();
+    });
+
+left.appendChild(backBtn);
   } else {
     const label = document.createElement('div');
     label.textContent = 'ВСЕ ОТСЕКИ';
@@ -4071,8 +4098,9 @@ function attachSectionToggles(wrapper) {
           type: 'single',
           testType: 'assertion',
           questionText:
-            text + '\n\nКто/что относится к этому утверждению?',
+            text + '\n\nВыбери пункт, к которому это относится:',
           options,
+                    sourceNodeId: node.id,
           correctIds: [subj],
           correctAnswerText: subj
         });
@@ -4114,8 +4142,8 @@ function attachSectionToggles(wrapper) {
         const ev = (card.event || '').trim();
         const person = (card.person || '').trim();
         let q;
-        if (person) q = 'В каком году ' + person + ' ' + ev + '?';
-        else q = 'В каком году произошло событие:\n' + ev;
+        if (person) q = 'Выбери дату/период, который относится к событию:\n' + person + ' — ' + ev;
+        else q = 'Выбери дату/период, который относится к событию:\n' + ev;
 
         const wrong = pickRandom(allTimeLabels, 3, label);
         const options = shuffle([label, ...wrong]).map(o => ({ id: o, text: o }));
@@ -4230,7 +4258,7 @@ function attachSectionToggles(wrapper) {
         questions.push({
           type: 'single',
           testType: 'term',
-          questionText: 'Что означает слово: «' + word + '»?',
+          questionText: 'Выбери вариант, который лучше всего подходит к термину:\n«' + word + '»',
           options,
           correctIds: [def],
           correctAnswerText: def
@@ -4666,6 +4694,35 @@ function attachSectionToggles(wrapper) {
 
     // quiz buttons
     btnQuizExit.onclick = () => exitQuiz();
+    // Кнопка «Уточнить»: показать, в каком отсеке лежит паттерн текущего вопроса
+    function getNodePathString(nodeId) {
+      const parts = [];
+      let n = getNode(nodeId);
+      while (n) {
+        parts.unshift(n.name || '(без названия)');
+        if (!n.parentId) break;
+        n = getNode(n.parentId);
+      }
+      return parts.join(' → ');
+    }
+
+    if (btnQuizClarify) {
+      btnQuizClarify.onclick = () => {
+        if (!quizState) return;
+        const q = quizState.questions[quizState.currentIndex];
+        const srcId = q && q.sourceNodeId ? q.sourceNodeId : null;
+        const src = srcId ? getNode(srcId) : null;
+        const parent = src && src.parentId ? getNode(src.parentId) : null;
+        if (parent) {
+          quizMessageEl.textContent = 'Отсек: ' + (parent.name || '(без названия)') + '\nПуть: ' + getNodePathString(parent.id);
+        } else if (src) {
+          quizMessageEl.textContent = 'Путь: ' + getNodePathString(src.id);
+        } else {
+          quizMessageEl.textContent = 'Не удалось определить отсек для этого вопроса.';
+        }
+      };
+    }
+
     btnQuizRestart.onclick = () => restartQuiz();
     btnQuizNext.onclick = () => goToNextQuestion();
 
