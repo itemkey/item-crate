@@ -414,8 +414,8 @@
     #appRoot {
       flex: 1;
       display: grid;
-      grid-template-columns: 96px 260px 6px minmax(0, 1fr);
-      gap: 32px;
+      grid-template-columns: 260px 6px minmax(0, 1fr);
+      gap: 0px;
     }
 
     .rootbar {
@@ -514,7 +514,7 @@
 
     .sidebar {
       border-right: 2px dashed #ffffff;
-      padding-right: 24px;
+      padding-right: 12px;
       display: flex;
       flex-direction: column;
       height: 100%;
@@ -706,6 +706,7 @@
       display: flex;
       flex-direction: column;
       height: 100%;
+      padding-left: 16px;
     }
 
     .main-header-line {
@@ -969,7 +970,6 @@
       grid-template-columns: minmax(0, 1fr);
     }
 
-    #appRoot.sidebar-collapsed .rootbar,
     #appRoot.sidebar-collapsed .sidebar,
     #appRoot.sidebar-collapsed .sidebar-resizer {
       display: none;
@@ -1234,14 +1234,18 @@
       }
     }
   
-/* --- Overrides: скролл и более понятная иерархия --- */
+/* --- Overrides: статичная верхняя зона + скролл только в контенте --- */
 body {
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .screen-inner {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+#screen-app .screen-inner{
+  overflow: hidden !important;
 }
 
 #appRoot.sidebar-collapsed {
@@ -1532,14 +1536,48 @@ body {
       margin-top: 2px;
     }
 
+    
     .sidebar-search {
       margin-top: 8px;
       position: relative;
     }
 
+    /* search input (topbar + sidebar reuse) */
     .sidebar-search-input {
       font-size: 11px;
-      padding-right: 24px;
+      padding-right: 34px; /* space for clear button */
+      border-radius: 10px;
+    }
+
+    .searchbox{
+      position: relative;
+    }
+
+    .searchbox-clear{
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      border: 1px solid #333;
+      background: #000;
+      color: #fff;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .searchbox-clear:hover{
+      background: #111;
+      border-color: #777;
+      opacity: 1;
     }
 
     .sidebar-search-results {
@@ -1547,44 +1585,209 @@ body {
       left: 0;
       right: 0;
       top: 100%;
-      margin-top: 4px;
-      max-height: 260px;
+      margin-top: 6px;
+      max-height: 320px;
       overflow-y: auto;
       background: #000000;
       border: 1px solid #333333;
-      border-radius: 8px;
-      padding: 4px 0;
+      border-radius: 10px;
+      padding: 6px;
       z-index: 40;
       display: none;
+      box-shadow: 0 16px 44px rgba(0,0,0,0.62);
     }
 
-    .sidebar-search-result {
-      padding: 4px 8px;
+    .search-section{
+      border: 1px solid #1d1d1d;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .search-section:last-child{ margin-bottom: 0; }
+
+    .search-section-header{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 10px;
+      border-bottom: 1px solid #1d1d1d;
+      background: #050505;
+    }
+
+    .search-section-title{
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--muted);
+      user-select: none;
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .search-section-count{
+      font-size: 9px;
+      color: #8a8a8a;
+      letter-spacing: 0.12em;
+    }
+
+    .search-section-hints{
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      color: #8a8a8a;
+      font-size: 9px;
+      letter-spacing: 0.10em;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .kbd{
+      border: 1px solid #2b2b2b;
+      border-bottom-color: #444;
+      padding: 1px 5px;
+      border-radius: 6px;
+      font-size: 9px;
+      color: #bdbdbd;
+      background: #000;
+    }
+
+    /* suggestion chips */
+    .search-sug-body{
+      padding: 8px 10px 10px;
+      background: #000;
+    }
+
+    .search-sug-chips{
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .search-sug-chip{
+      border: 1px solid #333;
+      background: #000;
+      color: #fff;
       cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      white-space: nowrap;
+    }
+
+    .search-sug-chip:hover{
+      background: #111;
+      border-color: #777;
+    }
+
+    .search-sug-chip .chip-hl{
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 2px;
+    }
+
+    .chip-action{
+      font-size: 10px;
+      opacity: 0.65;
+      letter-spacing: 0;
+    }
+
+    /* results list */
+    .search-res-body{
+      padding: 4px;
+      background: #000;
+    }
+
+    .search-item{
+      padding: 8px 8px;
+      cursor: pointer;
+      border-radius: 8px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .search-item:hover{
+      background: #111111;
+    }
+
+    .search-item.active{
+      background: rgba(255,255,255,0.10);
+      outline: 1px solid rgba(255,255,255,0.22);
+    }
+
+    .search-badge{
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      border: 1px solid #444;
+      border-radius: 999px;
+      padding: 3px 7px;
+      color: #fff;
+      flex: 0 0 auto;
+      margin-top: 1px;
+      background: #000;
+    }
+
+    .search-item-main{
+      min-width: 0;
       display: flex;
       flex-direction: column;
       gap: 2px;
     }
 
-    .sidebar-search-result:hover {
-      background: #111111;
-    }
-
-    .sidebar-search-title {
+    .search-item-title{
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
+      letter-spacing: 0.08em;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      min-width: 0;
     }
 
-    .sidebar-search-path {
-      font-size: 10px;
-      color: #aaaaaa;
+    .search-item-title-main{
+      min-width: 0;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    /* === Search highlight (как Ctrl+F) === */
+    .search-item-year{
+      flex: 0 0 auto;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      color: #bdbdbd;
+      opacity: 0.95;
+      white-space: nowrap;
+    }
+
+    .search-item-sub{
+      font-size: 10px;
+      color: #aaaaaa;
+      line-height: 1.35;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .search-item-path{
+      font-size: 9px;
+      color: #6f6f6f;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+/* === Search highlight (как Ctrl+F) === */
     mark.search-highlight{
       background: rgba(255, 0, 0, 0.14);
       color: inherit;
@@ -1593,157 +1796,222 @@ body {
       border-radius: 2px;
     }
 
+
+/* === FIX: only dashed divider between hierarchy and details; draggable on dashed === */
+.sidebar{
+  border-right: none !important; /* remove extra dashed line on sidebar edge */
+}
+.sidebar-resizer{
+  background: transparent !important; /* remove solid line */
+  width: 6px !important;             /* keep hit area for resizing */
+  position: relative;
+}
+.sidebar-resizer::before{
+  content: '' !important;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 2px dashed #ffffff;
+}
+
+
+
+/* === TOP HIERARCHY LAYOUT (hierarchy moved from left to top) === */
+#appRoot.app-vertical{
+  --hierH: 260px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: 12px;
+}
+
+.topbar{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: start;
+  border: 1px solid #ffffff;
+  border-radius: 10px;
+  background: #050505;
+  padding: 10px 12px;
+}
+
+.topbar-block{
+  min-width: 0;
+}
+
+.topbar-search{
+  position: relative;
+}
+
+.hierarchy-top-wrapper{
+  position: relative;
+  border: 1px solid #ffffff;
+  border-radius: 10px;
+  background: #050505;
+  padding: 10px 12px;
+
+  /* статичный размер (управляется пользователем) */
+  height: var(--hierH);
+  min-height: var(--hierH);
+  max-height: var(--hierH);
+  flex: 0 0 var(--hierH);
+
+  overflow: auto;
+}
+
+/* --- hierarchy resize handle (bottom-right) --- */
+.hier-resize-handle{
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 16px;
+  height: 16px;
+  cursor: ns-resize;
+  opacity: 0.75;
+  pointer-events: auto;
+}
+.hier-resize-handle::before,
+.hier-resize-handle::after{
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 14px;
+  height: 14px;
+  border-right: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+  opacity: 0.65;
+}
+.hier-resize-handle::after{
+  width: 9px;
+  height: 9px;
+  opacity: 0.95;
+}
+.hier-resize-handle:hover{ opacity: 1; }
+body.hierarchy-resizing{
+  cursor: ns-resize !important;
+  user-select: none !important;
+}
+body.hierarchy-resizing *{
+  user-select: none !important;
+}
+
+
+.main-panel-full{
+  padding-left: 0;
+}
+
+/* FIX: вертикальная раскладка — главный блок занимает остаток высоты, а "ИЕРАРХИЯ" имеет фиксированный размер */
+#appRoot.app-vertical > .topbar{
+  flex: 0 0 auto;
+}
+#appRoot.app-vertical > .hierarchy-top-wrapper{
+  flex-shrink: 0;
+}
+#appRoot.app-vertical > .main-panel{
+  height: auto;      /* снимаем конфликт с height:100% */
+  flex: 1 1 auto;    /* главный контент растёт/сжимается, не давя "ИЕРАРХИЯ" */
+  min-height: 0;     /* чтобы внутренний скролл #detailsRoot работал корректно */
+}
+
+/* allow hierarchy labels to wrap now that hierarchy is on top */
+.hier-name{
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.35;
+}
+
+/* hierarchy rows get full width */
+#treeRoot .hier-row{
+  width: 100%;
+}
+
+/* search dropdown inside topbar */
+.topbar .sidebar-search-results{
+  left: 0;
+  right: 0;
+}
+
+/* responsive */
+@media (max-width: 960px){
+  .topbar{
+    grid-template-columns: 1fr;
+  }  #appRoot.app-vertical{
+    --hierH: 320px;
+  }
+}
 </style>
 </head>
-<body>
-  <!-- 01. Заставка -->
-  <div id="screen-splash" class="screen">
-    <div class="screen-inner">
-      <img src="01.jpg" alt="ТВОИ ДАННЫЕ" class="splash-image" />
-      <div class="splash-hint">нажми, чтобы продолжить</div>
-    </div>
-  </div>
-
-  <!-- 02. В МОЗГ -->
-  <div id="screen-brain" class="screen screen-visible">
+<body><!-- 03. Основной интерфейс -->
+  <div id="screen-app" class="screen screen-visible">
     <div class="screen-inner">
       
-      <div class="brain-left">
-        <div class="brain-site-name small-elongated">item:crate</div>
+<div id="appRoot" class="app-vertical">
+  <!-- TOP: breadcrumb + global search -->
+  <header class="topbar">
+    <div class="topbar-block">
+      <div class="sidebar-breadcrumb-label">КАТЕГОРИИ</div>
+      <div id="breadcrumb"></div>
+    </div>
 
-        <div class="brain-menu">
-          <button class="brain-menu-btn elongated" id="brainTitle" type="button">
-            АКТИВИЗАЦИЯ НЕЙРОНОВ
-          </button>
-          <button class="brain-menu-btn small-elongated" type="button">
-            ЗАПИСКИ ОНОИ?
-          </button>
-          <button class="brain-menu-btn small-elongated" type="button">
-            НЕ ЕЩЁ ПОТЕРЯННЫЕ МОМЕНТЫ
-          </button>
-        </div>
-
-        <div class="brain-left-bottom">
-          помоги сам себе<span class="elongated"> а этот сайт кста не поможет </span>
-        </div>
-      </div
+    <div class="topbar-block topbar-search">
+      <div class="searchbox" id="globalSearchBox">
+        <input
+          type="search"
+          id="globalSearchInput"
+          class="form-input sidebar-search-input"
+          placeholder="поиск по всем отсекам и фактам..."
+          autocomplete="off"
+        />
+        <button class="searchbox-clear" id="globalSearchClear" type="button" title="Очистить" aria-label="Очистить поиск">×</button>
       </div>
+      <div class="sidebar-search-results" id="globalSearchResults"></div>
+    </div>
+  </header>
 
-      <div class="brain-right">
-        <img src="brain_icon.png" alt="Мозг" class="brain-icon" id="brainIcon" />
+  <!-- TOP: hierarchy (full width) -->
+  <div class="hierarchy-top-wrapper" id="hierarchyPanel">
+    <div class="hier-header">
+      <div class="hier-title">ИЕРАРХИЯ</div>
+      <button class="btn btn-sm btn-ghost" id="btnTreeAddRoot" type="button" title="Добавить корневую категорию (корень)">+</button>
+    </div>
 
-        <img src="person_data.png" alt="ТВОИ ДАННЫЕ" class="brain-person" />
+    <div id="treeRoot"></div>
 
-        <div class="brain-squares">
-          <button class="brain-square square-relative brain-square-disabled" id="btnGoToApp" type="button" disabled></button>
-          <button class="brain-square"></button>
-          <button class="brain-square small"></button>
-        </div>
-
-        <div class="brain-io-row">
-          <button class="brain-io" id="btnExport">ЭКСПОРТ</button>
-          <button class="brain-io" id="btnImport">ИМПОРТ</button>
-          <input type="file" id="fileInput" accept="application/json" />
-        </div>
-
-        <div class="brain-brand">
-          <div class="small-elongated">ТВОИ ДАННЫЕ</div>
-        </div>
+    <div class="sidebar-legend">
+      <div class="legend-item">
+        <span class="legend-badge legend-badge-cell">ОТСЕК</span>
+        <span>— раздел / «папка» с подкатегориями.</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-badge legend-badge-patt">ПАТТЕРН</span>
+        <span>— внутри него лежат факты, годы, списки и термины.</span>
       </div>
     </div>
+    <div class="hier-resize-handle" id="hierResizeHandle" title="Высота иерархии"></div>
   </div>
 
-  <!-- 02b. Экран выбора корня -->
-  <div id="screen-roots" class="screen">
-    <div class="screen-inner">
-      <div class="roots-back small-elongated" id="backToBrainRoots">В МОЗГ</div>
-      <div class="roots-header">
-        <div class="roots-title elongated">АКТИВИЗАЦИЯ НЕЙРОНОВ</div>
-        <div class="roots-sub small-elongated">ВЫБЕРИ КОРЕНЬ</div>
+  <!-- MAIN -->
+  <section class="main-panel main-panel-full">
+    <div class="main-header-line">
+      <div class="main-title-wrapper">
+        <span class="small-elongated" id="mainTitleText">ПОДГОТОВКА К ЭКЗАМЕНАМ</span>
       </div>
-      <div class="roots-center">
-        <div class="roots-bracket roots-bracket-left"></div>
-        <div class="roots-list-wrapper">
-          <button class="roots-add-btn" id="btnRootsAdd">+</button>
-          <div class="roots-list" id="rootsList"></div>
-        </div>
-        <div class="roots-bracket roots-bracket-right"></div>
+      <div id="headerActions">
+        <button class="btn btn-sm btn-ghost" id="btnExport" type="button" title="Скачать базу (exam-db.json)">Экспорт</button>
+        <button class="btn btn-sm btn-ghost" id="btnImport" type="button" title="Загрузить базу (exam-db.json)">Импорт</button>
+        <input id="fileInput" type="file" accept="application/json" />
       </div>
     </div>
-  </div>
-
-  <!-- 03. Основной интерфейс -->
-  <div id="screen-app" class="screen">
-    <div class="screen-inner">
-      <div id="appRoot">
-        <aside class="rootbar">
-          <div class="rootbar-expanded">
-            <div class="rootbar-top">
-              <button class="rootbar-plus" id="btnRootbarAdd" type="button">+</button>
-              <div class="rootbar-label small-elongated">КОРНИ</div>
-            </div>
-            <div class="rootbar-list" id="rootbarList"></div>
-          </div>
-          <div class="rootbar-collapsed">
-            <button class="rootbar-toggle-mini js-sidebar-toggle" type="button" title="Развернуть боковую панель">▶</button>
-            <button class="rootbar-icon" id="collapsedGoBrain" type="button" title="В МОЗГ">
-              <img src="brain_icon.png" alt="В МОЗГ" />
-            </button>
-            <button class="rootbar-icon" id="collapsedAddRoot" type="button" title="Новый корень">+</button>
-            <button class="rootbar-icon" id="collapsedSearch" type="button" title="Поиск по сайту">🔍</button>
-          </div>
-        </aside>
-        <aside class="sidebar">
-          <div class="sidebar-top">
-            <button class="sidebar-toggle-inner js-sidebar-toggle" type="button" title="Свернуть боковую панель">◀</button>
-            <div class="sidebar-brand small-elongated" id="backToBrain">
-              В МОЗГ
-            </div>
-            <button class="sidebar-plus" id="btnCreateRootCategory">+</button>
-            <div>
-              <div class="sidebar-breadcrumb-label">КАТЕГОРИИ</div>
-              <div id="breadcrumb"></div>
-            </div>
-          </div>
-          <div class="sidebar-search">
-            <input
-              type="search"
-              id="globalSearchInput"
-              class="form-input sidebar-search-input"
-              placeholder="поиск по всем отсекам и фактам..."
-            />
-            <div class="sidebar-search-results" id="globalSearchResults"></div>
-          </div>
-          <div class="sidebar-tree-wrapper">
-            <div id="treeRoot"></div>
-            <div class="sidebar-legend">
-              <div class="legend-item">
-                <span class="legend-badge legend-badge-cell">ОТСЕК</span>
-                <span>— раздел / «папка» с подкатегориями.</span>
-              </div>
-              <div class="legend-item">
-                <span class="legend-badge legend-badge-patt">ПАТТЕРН</span>
-                <span>— внутри него лежат факты, годы, списки и термины.</span>
-              </div>
-            </div>
-          </div>
-        </aside>
-        <div id="sidebarResizer" class="sidebar-resizer"></div>
-
-        <section class="main-panel">
-          <div class="main-header-line">
-            <div class="main-title-wrapper">
-              <span class="small-elongated" id="mainTitleText">ОТСЕК / ПАТТЕРН</span>
-            </div>
-            <div id="headerActions"></div>
-          </div>
-          <div id="detailsRoot"></div>
-        </section>
-      </div>
-    </div>
-  </div>
-
-  <!-- Текст при клике на мозг -->
+    <div id="detailsRoot"></div>
+  </section>
+</div>
+<!-- Текст при клике на мозг -->
   <div id="brainStory" class="brain-story-overlay">
     <div class="brain-story-card">
       <p>
@@ -2078,6 +2346,15 @@ body {
     const btnCreateCancel = document.getElementById('btnCreateCancel');
     const btnCreateConfirm = document.getElementById('btnCreateConfirm');
     const btnImportInCreate = document.getElementById('btnImportInCreate');
+    const btnTreeAddRoot = document.getElementById('btnTreeAddRoot');
+
+    // ROOT '+' modal
+    const rootPlusModalEl = document.getElementById('rootPlusModal');
+    const rootPlusCloseEl = document.getElementById('rootPlusClose');
+    const rootPlusCancelEl = document.getElementById('rootPlusCancel');
+    const rootPlusCreateEl = document.getElementById('rootPlusCreate');
+    const rootPlusImportEl = document.getElementById('rootPlusImport');
+
 
     const appRootEl = document.getElementById('appRoot');
     const sidebarEl = document.querySelector('.sidebar');
@@ -2091,7 +2368,7 @@ body {
     if (sidebarResizerEl && appRootEl && sidebarEl) {
       const applySidebarWidth = (w) => {
         window.__sidebarWidthPx = w;
-        appRootEl.style.gridTemplateColumns = `96px ${w}px 6px minmax(0, 1fr)`;
+        appRootEl.style.gridTemplateColumns = `${w}px 6px minmax(0, 1fr)`;
       };
 
       const initialRect = sidebarEl.getBoundingClientRect();
@@ -2125,6 +2402,75 @@ body {
         document.removeEventListener('mouseup', onSidebarResizeEnd);
       }
     }
+
+    // ===== HIERARCHY PANEL RESIZE (bottom-right handle) =====
+    const hierarchyPanelEl = document.getElementById('hierarchyPanel');
+    const hierResizeHandleEl = document.getElementById('hierResizeHandle');
+    const HIER_HEIGHT_KEY = 'exam-helper-hierarchy-height-px';
+
+    let hierIsResizing = false;
+    let hierStartY = 0;
+    let hierStartHeight = 0;
+
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+    const getHierarchyMaxHeight = () => {
+      const topbarEl = document.querySelector('.topbar');
+      const topbarH = topbarEl ? topbarEl.getBoundingClientRect().height : 0;
+      // небольшой запас под отступы/гепы и нижнюю часть экрана
+      const max = window.innerHeight - topbarH - 180;
+      return Math.max(220, max);
+    };
+
+    const applyHierarchyHeight = (px) => {
+      if (!appRootEl) return;
+      const maxH = getHierarchyMaxHeight();
+      const h = clamp(px, 160, maxH);
+      appRootEl.style.setProperty('--hierH', `${Math.round(h)}px`);
+      try { localStorage.setItem(HIER_HEIGHT_KEY, String(Math.round(h))); } catch (e) {}
+    };
+
+    // init from storage
+    try {
+      const saved = parseInt(localStorage.getItem(HIER_HEIGHT_KEY) || '', 10);
+      if (Number.isFinite(saved) && saved > 0) {
+        applyHierarchyHeight(saved);
+      }
+    } catch (e) {}
+
+    if (hierResizeHandleEl && hierarchyPanelEl) {
+      hierResizeHandleEl.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        hierIsResizing = true;
+        hierStartY = e.clientY;
+        hierStartHeight = hierarchyPanelEl.getBoundingClientRect().height;
+        document.body.classList.add('hierarchy-resizing');
+        document.addEventListener('mousemove', onHierResizeMove);
+        document.addEventListener('mouseup', onHierResizeEnd);
+      });
+
+      function onHierResizeMove(e) {
+        if (!hierIsResizing) return;
+        const delta = e.clientY - hierStartY;
+        applyHierarchyHeight(hierStartHeight + delta);
+      }
+
+      function onHierResizeEnd() {
+        if (!hierIsResizing) return;
+        hierIsResizing = false;
+        document.body.classList.remove('hierarchy-resizing');
+        document.removeEventListener('mousemove', onHierResizeMove);
+        document.removeEventListener('mouseup', onHierResizeEnd);
+      }
+    }
+
+    window.addEventListener('resize', () => {
+      // на ресайзе окна — поджимаем высоту, если она стала слишком большой
+      try {
+        const current = hierarchyPanelEl ? hierarchyPanelEl.getBoundingClientRect().height : null;
+        if (current) applyHierarchyHeight(current);
+      } catch (e) {}
+    });
 
 
     // ===== DATA MODEL =====
@@ -2165,12 +2511,16 @@ body {
       }
     }
 
+    let __stateRevision = 0;
+
     function saveState() {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       } catch (e) {
         console.warn('Failed to save state', e);
       }
+      // ревизия состояния (для кешей, например поиска)
+      __stateRevision++;
     }
 
     let state = loadState();
@@ -2184,6 +2534,24 @@ body {
     // Вшита прямо в этот файл как embeddedDeveloperDB,
     // а при наличии exam-db.json рядом с HTML — подменяется свежей версией.
     const embeddedDeveloperDB = {"rootId": "root", "nextId": 141, "nodes": {"root": {"id": "root", "name": "Категории", "type": "category", "parentId": null, "children": ["n1"], "cards": []}, "n1": {"id": "n1", "name": "История Беларуси", "type": "category", "parentId": "root", "children": ["n2"], "config": {"scope": "subject", "preset": "history"}, "cards": []}, "n2": {"id": "n2", "name": "ВКЛ", "type": "category", "parentId": "n1", "children": ["n3", "n83"], "cards": []}, "n3": {"id": "n3", "name": "Князья", "type": "category", "parentId": "n2", "children": ["n9", "n26", "n32", "n40", "n46", "n56"], "cards": []}, "n9": {"id": "n9", "name": "Миндовг", "type": "category", "parentId": "n3", "children": ["n10", "n23", "n74"], "cards": []}, "n10": {"id": "n10", "name": "Года", "type": "characteristic", "parentId": "n9", "children": [], "factType": "years", "cards": [{"id": "n11", "kind": "years", "event": "Миндовг уже имел значительную власть и контролировал определенную часть литовских земель - \"Литва Миндовга\", хотя еще не правил всей Литвой", "timeRaw": "1235", "era": "н. э.", "person": "Миндовг"}, {"id": "n12", "kind": "years", "event": "произошла битва под Шяуляем, где литовцы, во главе Миндовга, разгромили Орден меченосцев", "timeRaw": "1236", "era": "н. э.", "person": "Миндовг"}, {"id": "n13", "kind": "years", "event": "Миндовг стал князем Новогородского(Новогрудок) княжества", "timeRaw": "1240", "era": "н. э.", "person": "Миндовг"}, {"id": "n14", "kind": "years", "event": "Миндовг принял православие", "timeRaw": "1246", "era": "н. э.", "person": "Миндовг"}, {"id": "n15", "kind": "years", "event": "Миндовг принял католичество", "timeRaw": "1251", "era": "н. э.", "person": "Миндовг"}, {"id": "n16", "kind": "years", "event": "Миндовг короновался в Новгородке (Можно считать официальной датой создания ВКЛ)", "timeRaw": "1253", "era": "н. э.", "person": "Миндовг"}, {"id": "n17", "kind": "years", "event": "произошла битва на озере Дурбе, под командованием Миндовга, против Тевтонского ордена", "timeRaw": "1260", "era": "н. э.", "person": "Миндовг"}, {"id": "n18", "kind": "years", "event": "Миндовг разорвал союз с крестоносцами, и заключил союз с Александром Невским", "timeRaw": "1261", "era": "н. э.", "person": "Миндовг"}, {"id": "n19", "kind": "years", "event": "Миндовг был убит в результате заговора между Тройнатом, Товтивилом, Довмонтом", "timeRaw": "1263", "era": "н. э.", "person": "Миндовг"}]}, "n23": {"id": "n23", "name": "Факт", "type": "characteristic", "parentId": "n9", "children": [], "factType": "assertion", "cards": [{"id": "n24", "kind": "assertion", "text": "первый князь ВКЛ, объединил Литву и Новогородское княжество в одно государство", "subject": "Миндовг"}, {"id": "n25", "kind": "assertion", "text": "Годы правления: 1253 - 1263 гг.", "subject": "Миндовг"}]}, "n26": {"id": "n26", "name": "Тройнат", "type": "category", "parentId": "n3", "children": ["n28"], "cards": []}, "n28": {"id": "n28", "name": "Факт", "type": "characteristic", "parentId": "n26", "children": [], "factType": "years", "cards": [{"id": "n29", "kind": "assertion", "text": "один из заговорщиков против Миндовга", "subject": "Тройнат"}, {"id": "n30", "kind": "assertion", "text": "стал князем ВКЛ после убийства Миндовга", "subject": "Тройнат"}, {"id": "n31", "kind": "assertion", "text": "его правление сопровождалось междоусобицами и нестабильностью", "subject": "Тройнат"}]}, "n32": {"id": "n32", "name": "Войшелк", "type": "category", "parentId": "n3", "children": ["n33"], "cards": []}, "n33": {"id": "n33", "name": "Факт", "type": "characteristic", "parentId": "n32", "children": [], "factType": "assertion", "cards": [{"id": "n34", "kind": "assertion", "text": "сын Миндовга", "subject": "Войшелк"}, {"id": "n35", "kind": "assertion", "text": "принял монашество", "subject": "Войшелк"}, {"id": "n36", "kind": "assertion", "text": "после убийства Тройната вернулся к власти", "subject": "Войшелк"}, {"id": "n37", "kind": "assertion", "text": "передал власть Шварну", "subject": "Войшелк"}, {"id": "n38", "kind": "assertion", "text": "был убит Левом Даниловичем", "subject": "Войшелк"}, {"id": "n39", "kind": "assertion", "text": "его правление способствовало укреплению христианства", "subject": "Войшелк"}]}, "n40": {"id": "n40", "name": "Тройдень", "type": "category", "parentId": "n3", "children": ["n41", "n43"], "cards": []}, "n41": {"id": "n41", "name": "Факт", "type": "characteristic", "parentId": "n40", "children": [], "factType": "assertion", "cards": [{"id": "n42", "kind": "assertion", "text": "один из князей ВКЛ, пришёл к власти после Войшелка", "subject": "Тройдень"}]}, "n43": {"id": "n43", "name": "Года", "type": "characteristic", "parentId": "n40", "children": [], "factType": "years", "cards": [{"id": "n44", "kind": "years", "event": "Тройдень разбил татар возле Гродно и Слонима", "timeRaw": "1277", "era": "н. э.", "person": "Тройдень"}, {"id": "n45", "kind": "years", "event": "Тройдень воевал с крестоносцами возле Динабурга", "timeRaw": "1281", "era": "н. э.", "person": "Тройдень"}]}, "n46": {"id": "n46", "name": "Витень", "type": "category", "parentId": "n3", "children": ["n47", "n50"], "cards": []}, "n47": {"id": "n47", "name": "Факт", "type": "characteristic", "parentId": "n46", "children": [], "factType": "assertion", "cards": [{"id": "n48", "kind": "assertion", "text": "князь ВКЛ до Гедимина", "subject": "Витень"}, {"id": "n49", "kind": "assertion", "text": "укреплял государство и вел борьбу с крестоносцами", "subject": "Витень"}, {"id": "n51", "kind": "assertion", "text": "при нём ВКЛ усилило своё влияние в регионе", "subject": "Витень"}]}, "n50": {"id": "n50", "name": "Года", "type": "characteristic", "parentId": "n46", "children": [], "factType": "years", "cards": [{"id": "n52", "kind": "years", "event": "битва Витеня с крестоносцами под Рудой", "timeRaw": "1298", "era": "н. э.", "person": "Витень"}, {"id": "n53", "kind": "years", "event": "укрепление Витенем Новогрудка как одного из центров ВКЛ", "timeRaw": "1316", "era": "н. э.", "person": "Витень"}, {"id": "n54", "kind": "years", "event": "приблизительное время смерти Витеня", "timeRaw": "1316", "era": "н. э.", "person": "Витень"}]}, "n56": {"id": "n56", "name": "Гедимин", "type": "category", "parentId": "n3", "children": ["n57", "n58"], "cards": []}, "n57": {"id": "n57", "name": "Года", "type": "characteristic", "parentId": "n56", "children": [], "factType": "years", "cards": [{"id": "n60", "kind": "years", "event": "Гедимин основал Вильно и перенес столицу в Вильно", "timeRaw": "1323", "era": "н. э.", "person": "Гедимин"}, {"id": "n65", "kind": "years", "event": "битва Гедимина на реке Окмене", "timeRaw": "1331", "era": "н. э.", "person": "Гедимин"}]}, "n58": {"id": "n58", "name": "Факт", "type": "characteristic", "parentId": "n56", "children": [], "factType": "assertion", "cards": [{"id": "n59", "kind": "assertion", "text": "великая князь ВКЛ, при котором государство значительно усилилось", "subject": "Гедимин"}, {"id": "n61", "kind": "assertion", "text": "при Гедимине ВКЛ активно расширяло свои территории на восток и запад", "subject": "Гедимин"}, {"id": "n62", "kind": "assertion", "text": "известен дипломатическими письмами западноевропейским правителям и орденам", "subject": "Гедимин"}, {"id": "n63", "kind": "assertion", "text": "стремился привлечь в ВКЛ ремесленников и купцов из Европы", "subject": "Гедимин"}, {"id": "n64", "kind": "assertion", "text": "при нём ВКЛ укрепило позиции в борьбе с Тевтонским орденом", "subject": "Гедимин"}, {"id": "n66", "kind": "assertion", "text": "династия Гедиминовичей стала одной из ведущих династий Восточной Европы", "subject": "Гедимин"}, {"id": "n67", "kind": "assertion", "text": "сыновья Гедимина правили в разных частях ВКЛ и соседних землях", "subject": "Гедимин"}, {"id": "n68", "kind": "assertion", "text": "Гедимин поддерживал относительную религиозную терпимость в государстве", "subject": "Гедимин"}, {"id": "n69", "kind": "assertion", "text": "при нём укреплялась роль Вильно как политического и культурного центра", "subject": "Гедимин"}, {"id": "n70", "kind": "assertion", "text": "его политика заложила основу дальнейшего усиления ВКЛ при его преемниках", "subject": "Гедимин"}, {"id": "n71", "kind": "assertion", "text": "Гедимин стал родоначальником династии, связанной с многими европейскими правящими домами", "subject": "Гедимин"}, {"id": "n72", "kind": "assertion", "text": "его правление считается одним из ключевых этапов формирования мощи ВКЛ", "subject": "Гедимин"}]}, "n74": {"id": "n74", "type": "characteristic", "name": "123", "parentId": "n9", "children": [], "factType": "assertion", "cards": []}, "n83": {"id": "n83", "type": "category", "name": "Система государственной власти", "parentId": "n2", "children": ["n84", "n112", "n118"], "cards": [], "config": null}, "n84": {"id": "n84", "type": "category", "name": "Верхняя власть", "parentId": "n83", "children": ["n87", "n100", "n107"], "cards": [], "config": null}, "n87": {"id": "n87", "type": "category", "name": "ВЕЛИКИЙ КНЯЗЬ ЛИТВОСКИЙ", "parentId": "n84", "children": ["n89", "n94"], "cards": [], "config": null}, "n89": {"id": "n89", "type": "characteristic", "name": "НАИМИНОВАНИЯ", "parentId": "n87", "children": [], "factType": "olist", "cards": [{"id": "n96", "kind": "olist-item", "text": "Великий князь литовский"}, {"id": "n97", "kind": "olist-item", "text": "король"}, {"id": "n98", "kind": "olist-item", "text": "господарь"}, {"id": "n99", "kind": "olist-item", "text": "король литвы и руси"}]}, "n94": {"id": "n94", "type": "characteristic", "name": "факты", "parentId": "n87", "children": [], "factType": "assertion", "cards": [{"id": "n95", "kind": "assertion", "text": "наследственная власть", "subject": "ВЕЛИКИЙ КНЯЗЬ ЛИТВОСКИЙ"}]}, "n100": {"id": "n100", "type": "category", "name": "паны-рада", "parentId": "n84", "children": ["n101"], "cards": [], "config": null}, "n101": {"id": "n101", "type": "characteristic", "name": "факты", "parentId": "n100", "children": [], "factType": "assertion", "cards": [{"id": "n103", "kind": "assertion", "text": "с 14 века - совещательный орган при князе", "subject": "паны-рада"}, {"id": "n105", "kind": "assertion", "text": "\"преднейшая лавица\" - постоянно действующий орган власти  в стране (центральная администрация, местное управление...)", "subject": "паны-рада"}, {"id": "n106", "kind": "assertion", "text": "1492 год, 1506год -привилей Александра Раде, о расширении полномочий - законодательные органы власти", "subject": "паны-рада"}]}, "n107": {"id": "n107", "type": "category", "name": "сейм", "parentId": "n84", "children": ["n108"], "cards": [], "config": null}, "n108": {"id": "n108", "type": "characteristic", "name": "факты", "parentId": "n107", "children": [], "factType": "assertion", "cards": [{"id": "n109", "kind": "assertion", "text": "сьезд шляхты в вкл", "subject": "сейм"}, {"id": "n110", "kind": "assertion", "text": "с 1511 года шляхта заседала по 2 представителя от поветов", "subject": "сейм"}, {"id": "n111", "kind": "assertion", "text": "с 14 века - высший законодательный орган власти", "subject": "сейм"}]}, "n112": {"id": "n112", "type": "category", "name": "центральная власть", "parentId": "n83", "children": ["n114"], "cards": [], "config": null}, "n114": {"id": "n114", "type": "characteristic", "name": "урядники", "parentId": "n112", "children": [], "factType": "term", "cards": [{"id": "n115", "kind": "term", "word": "канцлер", "definition": "заведовал государственной канцелярией, печатью"}, {"id": "n116", "kind": "term", "word": "гетман наивысший", "definition": "командовал войском вкл"}, {"id": "n117", "kind": "term", "word": "подскарбий земкский", "definition": "заведовал казной (скарбом) вкл"}]}, "n118": {"id": "n118", "type": "category", "name": "местное управление", "parentId": "n83", "children": ["n124"], "cards": [], "config": null}, "n121": {"id": "n121", "type": "characteristic", "name": "административные единицы", "parentId": "n124", "children": [], "factType": "term", "cards": [{"id": "n122", "kind": "term", "word": "Воеводство", "definition": "крупнейшая административная единица, делилось на поветы (на современный лад - области)"}, {"id": "n123", "kind": "term", "word": "повет = волость", "definition": "административная единица (на современный лад - район)"}]}, "n124": {"id": "n124", "type": "category", "name": "АДМИНИСТРАТИВНЫЕ ЕДИНИЦЫ", "parentId": "n118", "children": ["n121", "n125", "n126"], "cards": [], "config": null}, "n125": {"id": "n125", "type": "category", "name": "Воеводство", "parentId": "n124", "children": ["n131"], "cards": [], "config": null}, "n126": {"id": "n126", "type": "category", "name": "повет(волость)", "parentId": "n124", "children": ["n137", "n140"], "cards": [], "config": null}, "n131": {"id": "n131", "type": "characteristic", "name": "ПРЕДСТАВИТЕЛИ ВОЕВОДСТВА", "parentId": "n125", "children": [], "factType": "term", "cards": [{"id": "n132", "kind": "term", "word": "воевода", "definition": "сменил княжеского наместника; из местной шляхты; назначен пожизненно; присутствовал на заседании рады и сейма"}, {"id": "n133", "kind": "term", "word": "каштелян", "definition": "возглавлял войско воеводства"}, {"id": "n135", "kind": "term", "word": "городничий", "definition": "отвечал за укрепление воеводского замка"}, {"id": "n136", "kind": "term", "word": "ключник", "definition": "отвечал за сбор податей"}]}, "n137": {"id": "n137", "type": "characteristic", "name": "ПРЕДСТАВИТЕЛИ повета", "parentId": "n126", "children": [], "factType": "term", "cards": [{"id": "n138", "kind": "term", "word": "староста", "definition": "руководил районом, представитель местной шляхты"}, {"id": "n139", "kind": "term", "word": "Тиун", "definition": "старец,, отвечал за сбор податей в государственную казну"}]}, "n140": {"id": "n140", "type": "characteristic", "name": "определения повета", "parentId": "n126", "children": [], "factType": "term", "cards": [{"id": "n141", "kind": "term", "word": "волость(10-30 сёл)", "definition": "сельский войт"}]}}};
+
+    // Если у пользователя ещё нет своей базы (пустой старт),
+    // то сразу открываем «Подготовку к экзаменам» на базе разработчика.
+    try {
+      const onlyRoot =
+        state &&
+        state.nodes &&
+        Object.keys(state.nodes).length === 1 &&
+        state.nodes[state.rootId] &&
+        state.nodes[state.rootId].name === 'Моя база знаний';
+      if (onlyRoot) {
+        state = JSON.parse(JSON.stringify(embeddedDeveloperDB));
+        currentNodeId = state.rootId;
+        sidebarViewNodeId = state.rootId;
+        saveState();
+      }
+    } catch (e) {}
+
     window.__developerState = embeddedDeveloperDB;
 
     (function loadDeveloperState() {
@@ -4545,46 +4913,56 @@ function attachSectionToggles(wrapper) {
 
     // ===== EXPORT / IMPORT =====
 
-    btnExport.onclick = () => {
-      const json = JSON.stringify(state, null, 2);
-      const blob = new Blob([json], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'exam-db.json';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    };
+function importStateFromJsonText(jsonText) {
+  try {
+    const data = JSON.parse(jsonText);
+    if (!data || typeof data !== 'object' || !data.nodes) {
+      alert('Файл не похож на базу Помогатора.');
+      return;
+    }
+    state = data;
+    currentNodeId = state.rootId || 'root';
+    sidebarViewNodeId = state.rootId || 'root';
+    saveState();
+    render();
+  } catch (err) {
+    console.error(err);
+    alert('Не удалось прочитать JSON-файл.');
+  }
+}
 
-    btnImport.onclick = () => {
-      fileInput.value = '';
-      fileInput.click();
-    };
+if (btnExport) {
+  btnExport.onclick = () => {
+    const json = JSON.stringify(state, null, 2);
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'exam-db.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+}
 
-    fileInput.onchange = (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const data = JSON.parse(reader.result);
-          if (!data || typeof data !== 'object' || !data.nodes) {
-            alert('Файл не похож на базу Помогатора.');
-            return;
-          }
-          state = data;
-          currentNodeId = state.rootId || 'root';
-          saveState();
-          render();
-        } catch (err) {
-          console.error(err);
-          alert('Не удалось прочитать JSON-файл.');
-        }
-      };
-      reader.readAsText(file, 'utf-8');
-    };
+if (btnImport) {
+  btnImport.onclick = () => {
+    if (!fileInput) return;
+    fileInput.value = '';
+    fileInput.click();
+  };
+}
+
+if (fileInput) {
+  fileInput.onchange = (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => importStateFromJsonText(reader.result);
+    reader.readAsText(file, 'utf-8');
+  };
+}
 
     // ===== EVENT BINDINGS =====
 
@@ -4605,7 +4983,50 @@ function attachSectionToggles(wrapper) {
       };
     }
 
-    btnCreateRootCategory.onclick = () => {
+    // '+' в иерархии: панель (создать корень / импортировать базу)
+function openRootPlusModal() {
+  if (!rootPlusModalEl) {
+    // fallback: если модалки нет — просто открываем создание корня
+    openCreateDialog('category', state.rootId);
+    return;
+  }
+  rootPlusModalEl.style.display = 'flex';
+}
+
+function closeRootPlusModal() {
+  if (!rootPlusModalEl) return;
+  rootPlusModalEl.style.display = 'none';
+}
+
+if (btnTreeAddRoot) {
+  btnTreeAddRoot.onclick = () => openRootPlusModal();
+}
+
+if (rootPlusCloseEl) rootPlusCloseEl.onclick = () => closeRootPlusModal();
+if (rootPlusCancelEl) rootPlusCancelEl.onclick = () => closeRootPlusModal();
+
+if (rootPlusModalEl) {
+  // клик по затемнению — закрыть
+  rootPlusModalEl.addEventListener('click', (e) => {
+    if (e.target === rootPlusModalEl) closeRootPlusModal();
+  });
+}
+
+if (rootPlusCreateEl) {
+  rootPlusCreateEl.onclick = () => {
+    closeRootPlusModal();
+    openCreateDialog('category', state.rootId);
+  };
+}
+
+if (rootPlusImportEl) {
+  rootPlusImportEl.onclick = () => {
+    closeRootPlusModal();
+    if (btnImport) btnImport.click();
+  };
+}
+
+if (btnCreateRootCategory) btnCreateRootCategory.onclick = () => {
       const node = getNode(currentNodeId) || getNode(state.rootId);
       const parentId = node && node.type === 'category' ? node.id : state.rootId;
       openCreateDialog('category', parentId);
@@ -5175,6 +5596,364 @@ function attachSectionToggles(wrapper) {
       return parts.join(' → ');
     }
 
+    // ===== SEARCH CACHE (словарь + токены по узлам) =====
+    // Нужно для "умного" автодополнения и более стабильного ранжирования.
+    const __searchStopWords = new Set([
+      'и','в','во','на','к','ко','с','со','по','из','у','о','об','от','до','за','для','над','под',
+      'что','это','как','то','а','но','не','ни','же','ли','бы','про','при','без','между','либо',
+      'так','там','тут','его','ее','её','их','мы','вы','они','он','она','оно','я','ты','вы','выше','ниже',
+      'год','годы','век','века'
+    ]);
+
+    let __searchCacheRev = -1;
+    let __searchCacheNodes = [];
+    let __searchWordFreq = new Map();
+    let __searchWordBuckets = Object.create(null);
+
+    function __commonPrefixLen(a, b) {
+      a = a || ''; b = b || '';
+      const n = Math.min(a.length, b.length);
+      let i = 0;
+      while (i < n && a[i] === b[i]) i++;
+      return i;
+    }
+
+    function rebuildSearchCache() {
+      __searchCacheNodes = [];
+      __searchWordFreq = new Map();
+      __searchWordBuckets = Object.create(null);
+
+      const nodes = state && state.nodes ? Object.values(state.nodes) : [];
+      for (const node of nodes) {
+        if (!node || !node.id) continue;
+
+        const rawText = buildNodeRawText(node);
+        const textNorm = normalizeTextForSearch(rawText);
+        if (!textNorm) continue;
+
+        const tokens = tokenizeForSearch(rawText); // уже нормализованные слова
+        const tokenSet = new Set(tokens);
+        const tokenStems = tokens.map(w => ruStem(w));
+
+        const entry = {
+          nodeId: node.id,
+          type: node.type,
+          title: node.name || '(без названия)',
+          path: buildPathForNode(node),
+          rawText,
+          textNorm,
+          tokens,
+          tokenSet,
+          tokenStems,
+          nameNorm: normalizeTextForSearch(node.name || '')
+        };
+        __searchCacheNodes.push(entry);
+
+        for (const w of tokens) {
+          if (!w) continue;
+          // для словаря: убираем слишком короткое и стоп-слова
+          if (!isNumericQueryToken(w) && w.length < 3) continue;
+          if (__searchStopWords.has(w)) continue;
+
+          __searchWordFreq.set(w, (__searchWordFreq.get(w) || 0) + 1);
+        }
+      }
+
+      // бакеты по 2 первым буквам (ускоряет автодополнение)
+      for (const [w, f] of __searchWordFreq.entries()) {
+        const key = (w || '').slice(0, 2);
+        if (!key) continue;
+        if (!__searchWordBuckets[key]) __searchWordBuckets[key] = [];
+        __searchWordBuckets[key].push(w);
+      }
+
+      Object.keys(__searchWordBuckets).forEach(k => {
+        __searchWordBuckets[k].sort((a, b) => {
+          const fa = __searchWordFreq.get(a) || 0;
+          const fb = __searchWordFreq.get(b) || 0;
+          if (fa !== fb) return fb - fa;
+          if (a.length !== b.length) return a.length - b.length;
+          return a.localeCompare(b);
+        });
+      });
+
+      __searchCacheRev = __stateRevision;
+    }
+
+    function ensureSearchCache() {
+      if (__searchCacheRev !== __stateRevision) rebuildSearchCache();
+    }
+
+    function pickBestTokenForNeedle(needle, tokens) {
+      const t = normalizeTextForSearch(needle);
+      if (!t) return '';
+      let best = '';
+      let bestScore = -1;
+
+      const tStem = ruStem(t);
+
+      for (const w of (tokens || [])) {
+        if (!w) continue;
+        if (!w.includes(t)) continue;
+
+        let s = 0;
+        if (w === t) s += 400;
+        if (w.startsWith(t)) s += 250;
+        // ближе по длине => выше
+        s += Math.max(0, 120 - Math.abs(w.length - t.length) * 8);
+
+        const wStem = ruStem(w);
+        if (wStem === tStem && wStem.length >= 3) s += 160;
+        else if (wStem.startsWith(tStem) && tStem.length >= 3) s += 90;
+
+        if (s > bestScore) {
+          bestScore = s;
+          best = w;
+        }
+      }
+
+      return best;
+    }
+
+    function scoreTermMatch(tt, textNorm, tokens, tokenSet, tokenStems, nameNorm) {
+      const t = normalizeTextForSearch(tt);
+      if (!t) return { level: 0, score: 0 };
+
+      // числа: только точное
+      if (isNumericQueryToken(t)) {
+        if (textNorm.includes(t)) return { level: 3, score: 260 };
+        return { level: 0, score: 0 };
+      }
+
+      const tStem = ruStem(t);
+      let bestLevel = 0;
+      let bestScore = 0;
+
+      // 1) точное слово
+      if (tokenSet && tokenSet.has(t)) {
+        bestLevel = 3;
+        bestScore = 220 + t.length * 8;
+      }
+
+      // 2) префикс / подстрока
+      if (bestLevel < 2) {
+        let prefixHit = false;
+        let containsHit = false;
+
+        for (const w of tokens) {
+          if (!w) continue;
+          if (!prefixHit && w.startsWith(t)) prefixHit = true;
+          if (!containsHit && t.length >= 3 && w.includes(t)) containsHit = true;
+          if (prefixHit && containsHit) break;
+        }
+
+        if (prefixHit) {
+          bestLevel = 2;
+          bestScore = 170 + t.length * 6;
+        } else if (containsHit) {
+          bestLevel = 2;
+          bestScore = 145 + t.length * 5;
+        }
+      }
+
+      // 3) совпадение/близость стемов
+      if (bestLevel < 2 && tStem.length >= 3) {
+        for (let i = 0; i < tokenStems.length; i++) {
+          const wStem = tokenStems[i];
+          if (!wStem) continue;
+          if (wStem === tStem) {
+            bestLevel = 2;
+            bestScore = Math.max(bestScore, 135 + tStem.length * 6);
+            break;
+          }
+        }
+      }
+
+      if (bestLevel < 2 && tStem.length >= 3) {
+        for (let i = 0; i < tokenStems.length; i++) {
+          const wStem = tokenStems[i];
+          if (!wStem) continue;
+          if (wStem.startsWith(tStem) || tStem.startsWith(wStem)) {
+            if (Math.min(wStem.length, tStem.length) >= 3) {
+              bestLevel = 2;
+              bestScore = Math.max(bestScore, 120 + Math.min(wStem.length, tStem.length) * 6);
+              break;
+            }
+          }
+        }
+      }
+
+      // 4) "умная" похожесть (левенштейн / триграммы)
+      if (bestLevel < 1) {
+        const tLen = t.length;
+        const maxDist = tLen <= 6 ? 1 : (tLen <= 10 ? 2 : 0);
+        const tTri = trigrams(tStem);
+
+        let bestFuzzy = 0;
+
+        for (let i = 0; i < tokenStems.length; i++) {
+          const w = tokens[i];
+          const wStem = tokenStems[i];
+          if (!w || !wStem) continue;
+          if (isNumericQueryToken(w)) continue;
+
+          // быстрые совпадения по префиксу стема
+          if ((wStem.startsWith(tStem) || tStem.startsWith(wStem)) && Math.min(wStem.length, tStem.length) >= 3) {
+            bestFuzzy = Math.max(bestFuzzy, 95);
+            continue;
+          }
+
+          if (maxDist) {
+            const d = levenshtein(wStem, tStem, maxDist);
+            if (d <= maxDist) {
+              bestFuzzy = Math.max(bestFuzzy, 85 - d * 18);
+              continue;
+            }
+          }
+
+          const sim = jaccard(tTri, trigrams(wStem));
+          if (sim >= 0.45 && Math.min(wStem.length, tStem.length) >= 4) {
+            bestFuzzy = Math.max(bestFuzzy, 65 + sim * 40);
+          }
+        }
+
+        if (bestFuzzy > 0) {
+          bestLevel = 1;
+          bestScore = bestFuzzy;
+        }
+      }
+
+      // бонус за попадание в заголовок
+      if (nameNorm && nameNorm.includes(t)) {
+        if (bestLevel < 2) bestLevel = 2;
+        bestScore += 90;
+      }
+
+      // небольшой бонус за длину (чуть стабилизирует ранжирование)
+      bestScore += Math.min(40, t.length * 3);
+
+      return { level: bestLevel, score: bestScore };
+    }
+
+    function scoreWordSuggestion(qTok, qStem, wTok, freq) {
+      const w = normalizeTextForSearch(wTok);
+      if (!w) return -1;
+      if (__searchStopWords.has(w)) return -1;
+
+      const wStem = ruStem(w);
+      const lcp = __commonPrefixLen(qTok, w);
+      const lcpStem = __commonPrefixLen(qStem, wStem);
+
+      let s = 0;
+
+      if (w === qTok) s += 4000;
+
+      if (w.startsWith(qTok)) {
+        s += 2600 + lcp * 20;
+        // чуть штрафуем за слишком длинные хвосты
+        s -= Math.max(0, (w.length - qTok.length)) * 8;
+      } else if (wStem.startsWith(qStem) && qStem.length >= 3) {
+        s += 2200 + lcpStem * 16;
+      } else if (qTok.length >= 3 && w.includes(qTok)) {
+        s += 1400;
+      }
+
+      const maxDist = qTok.length <= 6 ? 1 : (qTok.length <= 10 ? 2 : 0);
+      if (maxDist) {
+        const d = levenshtein(wStem, qStem, maxDist);
+        if (d <= maxDist) s += 1000 - d * 220;
+      }
+
+      const sim = jaccard(trigrams(wStem), trigrams(qStem));
+      if (sim >= 0.45 && Math.min(wStem.length, qStem.length) >= 4) {
+        s += 500 + sim * 300;
+      }
+
+      const f = freq || 1;
+      s += Math.log(1 + f) * 220;
+
+      return s;
+    }
+
+    
+    function getWordSuggestions(prefix, limit) {
+      ensureSearchCache();
+      limit = limit || 8;
+
+      const q = normalizeTextForSearch(prefix);
+      const qTok = (tokenizeForSearch(q)[0] || '');
+      if (!qTok || qTok.length < 2) return [];
+      if (isNumericQueryToken(qTok)) return [];
+
+      const qStem = ruStem(qTok);
+      const key = qTok.slice(0, 2);
+
+      // пул кандидатов: сначала бакет, потом fallback на весь словарь (если бакет пуст)
+      let pool = (__searchWordBuckets[key] || []);
+      if (!pool.length) pool = Array.from(__searchWordFreq.keys());
+
+      const scored = [];
+      const seen = new Set();
+
+      // ограничим пул, чтобы не тормозило на больших базах
+      const maxScan = Math.min(pool.length, 2000);
+
+      function commonPrefixLen(a, b){
+        const n = Math.min(a.length, b.length);
+        let i = 0;
+        for (; i < n; i++){
+          if (a[i] !== b[i]) break;
+        }
+        return i;
+      }
+
+      for (let i = 0; i < maxScan; i++) {
+        const wTok = pool[i];
+        if (!wTok || seen.has(wTok)) continue;
+        seen.add(wTok);
+
+        const wStem = ruStem(wTok);
+
+        const tokPref = (wTok.startsWith(qTok) || qTok.startsWith(wTok));
+        const stemPref = (qStem.length >= 3 && (wStem.startsWith(qStem) || qStem.startsWith(wStem)));
+        const lcp = commonPrefixLen(wTok, qTok);
+
+        // быстрый фильтр: по умолчанию держим только близкие по смыслу/форме варианты
+        if (!tokPref && !stemPref) {
+          // для русских слов: если общая приставка меньше 3 букв — слишком много мусора ("да..." для "даты")
+          const need = qTok.length >= 4 ? 3 : 2;
+          if (lcp < need) continue;
+
+          // опечатки: разрешим небольшую ошибку, но только если общая приставка нормальная
+          const maxDist = qTok.length <= 6 ? 1 : (qTok.length <= 10 ? 2 : 0);
+          if (maxDist) {
+            const d = levenshtein(wTok, qTok, maxDist);
+            if (d > maxDist) continue;
+          } else {
+            continue;
+          }
+        }
+
+        const s = scoreWordSuggestion(qTok, qStem, wTok, __searchWordFreq.get(wTok) || 1);
+        if (s <= 0) continue;
+
+        // жестко поднимаем "однокоренные" варианты
+        const boost = (wStem === qStem) ? 2200 : (stemPref ? 900 : 0);
+        scored.push({ w: wTok, s: s + boost });
+      }
+
+      scored.sort((a, b) => {
+        if (a.s !== b.s) return b.s - a.s;
+        // короче слово — обычно "основная форма"
+        if (a.w.length !== b.w.length) return a.w.length - b.w.length;
+        return a.w.localeCompare(b.w);
+      });
+
+      return scored.slice(0, limit).map(x => x.w);
+    }
+
+
+
     function collectMatchInfo(terms, rawText, textNorm, tokens) {
       // Возвращаем: что нашли (точно/похоже), какое слово в тексте зацепило, и небольшой контекст
       const out = {
@@ -5186,20 +5965,27 @@ function attachSectionToggles(wrapper) {
 
       if (!rawText) return out;
 
-      // 1) Пытаемся найти точный термин как подстроку (в нормализованном тексте),
-      // а затем вытащить кусок из оригинала приблизительно.
+      // 1) "точное" вхождение как подстроки (быстро),
+      // но foundWord стараемся вернуть ПОЛНЫМ словом из текста (а не тем, что набрали).
       for (const t0 of terms) {
         const t = normalizeTextForSearch(t0);
         if (!t) continue;
-        if (isNumericQueryToken(t) && textNorm.includes(t)) {
-          out.foundTerm = t0;
-          out.foundWord = t;
-          out.matchKind = 'exact';
-          break;
+
+        // числа — только точное
+        if (isNumericQueryToken(t)) {
+          if (textNorm.includes(t)) {
+            out.foundTerm = t0;
+            out.foundWord = t;
+            out.matchKind = 'exact';
+            break;
+          }
+          continue;
         }
+
         if (textNorm.includes(t)) {
           out.foundTerm = t0;
-          out.foundWord = t0;
+          const best = pickBestTokenForNeedle(t, tokens);
+          out.foundWord = best || t;
           out.matchKind = 'exact';
           break;
         }
@@ -5220,38 +6006,46 @@ function attachSectionToggles(wrapper) {
           let bestScore = -1;
 
           for (const w of tokens) {
-            if (!w || isNumericQueryToken(w)) continue;
             const wNorm = normalizeTextForSearch(w);
+            if (!wNorm) continue;
+            if (isNumericQueryToken(wNorm)) continue;
+
+            // чем ближе по "форме" — тем выше
             if (wNorm === t) {
-              best = w;
-              bestScore = 999;
-              break;
-            }
-            // префикс
-            if (wNorm.startsWith(t) || t.startsWith(wNorm)) {
-              const s = 50 + Math.min(wNorm.length, tLen);
-              if (s > bestScore) { bestScore = s; best = w; }
+              const s = 130 + wNorm.length;
+              if (s > bestScore) { bestScore = s; best = wNorm; }
               continue;
             }
+            if ((wNorm.startsWith(t) || t.startsWith(wNorm)) && Math.min(wNorm.length, tLen) >= 3) {
+              // важный кейс: "помес" => "поместье"
+              const s = 120 + __commonPrefixLen(wNorm, t) * 10 + Math.min(wNorm.length, 18);
+              if (s > bestScore) { bestScore = s; best = wNorm; }
+              continue;
+            }
+
             const wStem = ruStem(wNorm);
+
             if (wStem === tStem && wStem.length >= 3) {
-              const s = 80 + wStem.length;
-              if (s > bestScore) { bestScore = s; best = w; }
+              const s = 105 + wStem.length * 3;
+              if (s > bestScore) { bestScore = s; best = wNorm; }
               continue;
             }
+
             const maxDist = tLen <= 6 ? 1 : (tLen <= 10 ? 2 : 0);
             if (maxDist) {
               const d = levenshtein(wStem, tStem, maxDist);
               if (d <= maxDist) {
-                const s = 40 - d;
-                if (s > bestScore) { bestScore = s; best = w; }
+                const s = 75 - d * 12;
+                if (s > bestScore) { bestScore = s; best = wNorm; }
                 continue;
               }
             }
+
             const sim = jaccard(tTri, trigrams(wStem));
             if (sim >= 0.45 && Math.min(wStem.length, tStem.length) >= 4) {
-              const s = sim * 30;
-              if (s > bestScore) { bestScore = s; best = w; }
+              const s = 60 + sim * 40;
+              if (s > bestScore) { bestScore = s; best = wNorm; }
+              continue;
             }
           }
 
@@ -5264,25 +6058,27 @@ function attachSectionToggles(wrapper) {
         }
       }
 
-      // 3) Сниппет: стараемся показать кусок текста вокруг найденного слова/термина
+      // 3) Сниппет вокруг foundWord (если есть)
       const baseNeedle = out.foundWord || out.foundTerm;
       if (baseNeedle) {
-        const raw = (rawText || '').toString();
         const needle = (baseNeedle || '').toString().trim();
         if (needle) {
-          const re = new RegExp(escapeRegExp(needle), 'i');
-          const mm = raw.match(re);
+          // e/ё вариант в regex
+          const n = normalizeTextForSearch(needle).replace(/е/g, '[её]');
+          const re = new RegExp(n, 'i');
+          const mm = rawText.match(re);
           if (mm && typeof mm.index === 'number') {
             const i = mm.index;
             const left = Math.max(0, i - 42);
-            const right = Math.min(raw.length, i + needle.length + 56);
-            let snippet = raw.slice(left, right);
+            const right = Math.min(rawText.length, i + needle.length + 56);
+            let snippet = rawText.slice(left, right);
             if (left > 0) snippet = '…' + snippet;
-            if (right < raw.length) snippet = snippet + '…';
+            if (right < rawText.length) snippet = snippet + '…';
             out.snippet = snippet;
           } else {
             // fallback: просто первые N символов
-            out.snippet = raw.length > 110 ? (raw.slice(0, 110) + '…') : raw;
+            out.snippet = (rawText || '').slice(0, 140);
+            if ((rawText || '').length > 140) out.snippet += '…';
           }
         }
       }
@@ -5298,142 +6094,465 @@ function attachSectionToggles(wrapper) {
       const terms = tokenizeForSearch(normQ).filter(t => t.length >= 2);
       if (!terms.length) return [];
 
-      const nodes = state && state.nodes ? Object.values(state.nodes) : [];
+      ensureSearchCache();
+
+      // 0) "умные слова" (автодополнение): сверху отдельным блоком
+      const out = [];
+      if (terms.length === 1 && terms[0] && !isNumericQueryToken(terms[0])) {
+        const sug = getWordSuggestions(terms[0], 8);
+        sug.forEach((w, idx) => {
+          out.push({
+            kind: 'suggestion',
+            type: 'suggestion',
+            title: w,
+            value: w,
+            path: '',
+            score: 1000000 - idx,
+            snippet: 'Подставить в поиск'
+          });
+        });
+      }
+
       const results = [];
 
-      nodes.forEach(node => {
-        const rawText = buildNodeRawText(node);
-        const text = normalizeTextForSearch(rawText);
-        if (!text) return;
+      for (const node of __searchCacheNodes) {
+        const textNorm = node.textNorm;
+        if (!textNorm) continue;
 
-        const tokens = tokenizeForSearch(text);
-
-        // "умное" совпадение: каждый термин должен быть найден (точно или приблизительно)
-        const ok = terms.every(t => fuzzyTermInText(t, text, tokens));
-        if (!ok) return;
-
-        // приоритет: точные совпадения выше похожих
-        const allExact = terms.every(t => {
-          const tt = normalizeTextForSearch(t);
-          if (!tt) return false;
-          return text.includes(tt);
-        });
-
-        // скоринг
+        let ok = true;
         let score = 0;
-        const nameNorm = normalizeTextForSearch(node.name || '');
+        const levels = [];
 
-        terms.forEach(t => {
-          const tt = normalizeTextForSearch(t);
-          if (!tt) return;
+        for (const t0 of terms) {
+          const tt = normalizeTextForSearch(t0);
+          if (!tt) { ok = false; break; }
 
-          // числа — только точное
-          if (isNumericQueryToken(tt)) {
-            if (text.includes(tt)) score += 22;
-            return;
-          }
+          const si = scoreTermMatch(
+            tt,
+            textNorm,
+            node.tokens,
+            node.tokenSet,
+            node.tokenStems,
+            node.nameNorm
+          );
 
-          if (nameNorm.includes(tt)) score += 10;
-          if (text.includes(' ' + tt) || text.startsWith(tt)) score += 4;
-          if (text.includes(tt)) score += 2;
+          if (!si || !si.level) { ok = false; break; }
 
-          // небольшой бонус за "похожесть", если точного нет
-          if (!text.includes(tt)) score += 1;
-        });
+          levels.push(si.level);
+          score += si.score;
+        }
+
+        if (!ok) continue;
+
+        const allExact = levels.every(l => l >= 3);
+        const allPrefix = levels.every(l => l >= 2);
 
         // бонус за тип: паттерн чаще интереснее по содержимому
-        if (node.type === 'characteristic') score += 1;
+        if (node.type === 'characteristic') score += 18;
 
-        const path = buildPathForNode(node);
-        const mi = collectMatchInfo(terms, rawText, text, tokens);
+        const mi = collectMatchInfo(terms, node.rawText, textNorm, node.tokens);
 
         results.push({
-          nodeId: node.id,
+          nodeId: node.nodeId,
           type: node.type,
-          title: node.name || '(без названия)',
-          path,
+          title: node.title,
+          path: node.path,
           score,
           allExact,
+          allPrefix,
           foundWord: mi.foundWord,
           foundTerm: mi.foundTerm,
           matchKind: mi.matchKind,
           snippet: mi.snippet
         });
-      });
+      }
 
       results.sort((a, b) => {
-        if (a.allExact !== b.allExact) return a.allExact ? -1 : 1; // exact first
+        if (a.allExact !== b.allExact) return a.allExact ? -1 : 1;
+        if (a.allPrefix !== b.allPrefix) return a.allPrefix ? -1 : 1;
         if (a.matchKind !== b.matchKind) return a.matchKind === 'exact' ? -1 : 1;
+        // если нашли слово — префиксное совпадение выше
+        const aq = normalizeTextForSearch(terms[0] || '');
+        const aw = normalizeTextForSearch(a.foundWord || '');
+        const bw = normalizeTextForSearch(b.foundWord || '');
+        const aPref = aq && aw && aw.startsWith(aq);
+        const bPref = aq && bw && bw.startsWith(aq);
+        if (aPref !== bPref) return aPref ? -1 : 1;
         return b.score - a.score;
       });
 
-      return results.slice(0, 30);
+      const nodeTop = results.slice(0, 30);
+
+      return out.concat(nodeTop);
+    }
+
+    
+    // flat list for keyboard navigation (data-gs-index on items)
+    let __globalSearchDisplayFlat = [];
+    let __globalSearchActiveIndex = -1;
+
+    function __escapeHtml(s){
+      return (s || '').toString()
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function __highlightInline(text, query){
+      const t = (text || '').toString();
+      const q = (query || '').toString().trim();
+      if (!t || !q) return __escapeHtml(t);
+
+      // match with e/ё equivalence
+      const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const pattern = esc.replace(/е/ig, '[её]').replace(/Е/g, '[ЕЁ]');
+      const re = new RegExp(pattern, 'ig');
+      const safe = __escapeHtml(t);
+
+      // try to highlight at least once (best effort)
+      try{
+        // we need to run regex on original, but replace in safe is hard.
+        // quick approach: if direct substring exists, highlight by index.
+        const lowT = t.toLowerCase().replace(/ё/g,'е');
+        const lowQ = q.toLowerCase().replace(/ё/g,'е');
+        const idx = lowT.indexOf(lowQ);
+        if (idx >= 0) {
+          const a = __escapeHtml(t.slice(0, idx));
+          const b = __escapeHtml(t.slice(idx, idx + q.length));
+          const c = __escapeHtml(t.slice(idx + q.length));
+          return a + '<mark class="search-highlight">' + b + '</mark>' + c;
+        }
+      }catch(e){}
+
+      // fallback: no highlight
+      return safe;
+    }
+
+    // Для паттернов типа "годы" — пытаемся показать конкретную дату/период прямо в быстрых результатах поиска.
+    function __pickBestYearsLabelForSearch(node, queryText, item){
+      if(!node) return '';
+      const type = (node.factType || 'assertion');
+      if(type !== 'years') return '';
+      const cards = node.cards || [];
+      if(!cards.length) return '';
+
+      const q = (queryText || '').toString();
+      const terms = tokenizeForSearch(q).filter(t => (t || '').length >= 2);
+
+      const fw = normalizeTextForSearch(item && item.foundWord ? item.foundWord : '');
+      const digits = q.match(/\d{1,4}/g) || [];
+
+      let bestCard = null;
+      let bestScore = -1;
+
+      cards.forEach(c => {
+        if(!c) return;
+        const label = formatYears(c);
+        if(!label) return;
+
+        const hay = normalizeTextForSearch(
+          ((c.person || '') + ' ' + (c.event || '') + ' ' + label + ' ' + (c.timeRaw || '') + ' ' + (c.timeExact || '') + ' ' + (c.era || ''))
+        );
+
+        let score = 0;
+
+        // совпадения по словам запроса
+        for(const term of terms){
+          if(!term) continue;
+          if(hay.includes(term)) score += 2;
+
+          const st = ruStem(term);
+          if(st && st.length >= 3){
+            const toks = tokenizeForSearch(hay);
+            for(const tk of toks){
+              if(ruStem(tk) === st){ score += 1; break; }
+            }
+          }
+        }
+
+        // бонус, если совпало именно то, что подсветили как найденное слово
+        if(fw && hay.includes(fw)) score += 4;
+
+        // бонус за цифры (если пользователь прямо ищет год/дату)
+        digits.forEach(d => {
+          if((c.timeRaw || '').includes(d) || (c.timeExact || '').includes(d)) score += 3;
+        });
+
+        if(score > bestScore){
+          bestScore = score;
+          bestCard = c;
+        }
+      });
+
+      if(bestCard) return formatYears(bestCard);
+      const fallback = cards.find(c => c && formatYears(c));
+      return fallback ? formatYears(fallback) : '';
+    }
+
+
+    function __commonPrefixLen(a, b){
+      a = (a || '').toString();
+      b = (b || '').toString();
+      const n = Math.min(a.length, b.length);
+      let i = 0;
+      for (; i < n; i++){
+        if (a[i] !== b[i]) break;
+      }
+      return i;
+    }
+
+    function setGlobalSearchActiveIndex(i){
+      if (!globalSearchResultsEl) return;
+      const n = __globalSearchDisplayFlat.length;
+      if (!n) { __globalSearchActiveIndex = -1; return; }
+      const next = Math.max(0, Math.min(n - 1, i));
+      __globalSearchActiveIndex = next;
+
+      globalSearchResultsEl.querySelectorAll('[data-gs-index]').forEach(el => {
+        el.classList.toggle('active', Number(el.dataset.gsIndex) === next);
+      });
+
+      const active = globalSearchResultsEl.querySelector('[data-gs-index="' + next + '"]');
+      if (active) {
+        // keep active item visible inside the dropdown
+        const c = globalSearchResultsEl.getBoundingClientRect();
+        const r = active.getBoundingClientRect();
+        if (r.bottom > c.bottom) active.scrollIntoView({ block: 'nearest' });
+        if (r.top < c.top) active.scrollIntoView({ block: 'nearest' });
+      }
+    }
+
+    function __applyGlobalSearchItem(item){
+      if (!item) return;
+      const isSug = item && (item.kind === 'suggestion' || item.type === 'suggestion');
+
+      if (isSug) {
+        if (!globalSearchInputEl) return;
+        globalSearchInputEl.value = item.value || item.title || '';
+        refreshGlobalSearch({ forceShow: true });
+        globalSearchInputEl.focus();
+        return;
+      }
+
+      const node = getNode(item.nodeId);
+      if (!node) return;
+
+      currentNodeId = node.id;
+      if (node.type === 'category') {
+        sidebarViewNodeId = node.id;
+      } else if (node.parentId) {
+        sidebarViewNodeId = node.parentId;
+      }
+
+      quizState = null;
+      factsState = null;
+
+      // подсветим найденное в деталях, но НЕ будем дергать экран при наборе текста
+      const q = (globalSearchInputEl && globalSearchInputEl.value) ? globalSearchInputEl.value : '';
+      __activeSearchHighlight = (q || '').trim();
+
+      render();
+      applyActiveSearchHighlight(true);
+      if (globalSearchResultsEl) globalSearchResultsEl.style.display = 'none';
     }
 
     function renderGlobalSearchResults(list) {
       if (!globalSearchResultsEl) return;
       globalSearchResultsEl.innerHTML = '';
+      __globalSearchDisplayFlat = [];
+      __globalSearchActiveIndex = -1;
+
+      const q = (globalSearchInputEl && globalSearchInputEl.value) ? globalSearchInputEl.value.trim() : '';
+
       if (!list || !list.length) {
         globalSearchResultsEl.style.display = 'none';
         return;
       }
 
+      const suggestions = [];
+      const results = [];
+
       list.forEach(item => {
-        const row = document.createElement('div');
-        row.className = 'sidebar-search-result';
-
-        const title = document.createElement('div');
-        title.className = 'sidebar-search-title';
-        const typeLabel =
-          item.type === 'category'
-            ? 'ОТСЕК'
-            : item.type === 'characteristic'
-            ? 'ПАТТЕРН'
-            : 'ЭЛЕМЕНТ';
-        title.textContent = typeLabel + ' · ' + item.title;
-
-        const meta = document.createElement('div');
-        meta.className = 'sidebar-search-path';
-        const kind = item.matchKind === 'exact' ? 'точно' : 'похоже';
-        const found = (item.foundWord || item.foundTerm || '').toString().trim();
-        meta.textContent = found
-          ? (`«${found}» (${kind}) — ${item.snippet || ''}`.trim())
-          : (item.snippet || '').trim();
-
-        // путь оставим в подсказке (не мешает, но можно увидеть)
-        row.title = item.path || '';
-
-        row.appendChild(title);
-        row.appendChild(meta);
-
-        row.addEventListener('click', () => {
-          const node = getNode(item.nodeId);
-          if (!node) return;
-
-          currentNodeId = node.id;
-          if (node.type === 'category') {
-            sidebarViewNodeId = node.id;
-          } else if (node.parentId) {
-            sidebarViewNodeId = node.parentId;
-          }
-
-          quizState = null;
-          factsState = null;
-
-          // подсветим найденное в деталях, но НЕ будем дергать экран при наборе текста
-          const q = (globalSearchInputEl && globalSearchInputEl.value) ? globalSearchInputEl.value : '';
-          __activeSearchHighlight = (q || '').trim();
-
-          render();
-          applyActiveSearchHighlight(true);
-          globalSearchResultsEl.style.display = 'none';
-        });
-
-        globalSearchResultsEl.appendChild(row);
+        const isSug = item && (item.kind === 'suggestion' || item.type === 'suggestion');
+        if (isSug) suggestions.push(item);
+        else results.push(item);
       });
 
+      let flatIndex = 0;
+      let secResultsEl = null;
+      let secSugEl = null;
+
+      // Results first (main value)
+      if (results.length) {
+        const sec = document.createElement('div');
+        sec.className = 'search-section search-section-results';
+
+        const head = document.createElement('div');
+        head.className = 'search-section-header';
+        head.innerHTML =
+          '<div class="search-section-title">РЕЗУЛЬТАТЫ <span class="search-section-count">(' + results.length + ')</span></div>' +
+          '<div class="search-section-hints"><span class="kbd">↑</span><span class="kbd">↓</span><span class="kbd">Enter</span></div>';
+
+        const body = document.createElement('div');
+        body.className = 'search-res-body';
+
+        results.forEach(item => {
+          const row = document.createElement('div');
+          row.className = 'search-item';
+          row.setAttribute('role', 'option');
+          row.dataset.gsIndex = String(flatIndex);
+
+          const badge = document.createElement('div');
+          badge.className = 'search-badge';
+
+          const typeLabel =
+            (item.type === 'category'
+              ? 'ОТСЕК'
+              : item.type === 'characteristic'
+                ? 'ПАТТЕРН'
+                : 'ЭЛЕМ');
+
+          badge.textContent = typeLabel;
+
+          const main = document.createElement('div');
+          main.className = 'search-item-main';
+
+          const title = document.createElement('div');
+          title.className = 'search-item-title';
+
+          const baseTitle = (item.title || '(без названия)').trim();
+
+          // если это паттерн "годы", покажем конкретную дату/период прямо тут
+          let yearsLabel = '';
+          if (item.type === 'characteristic' && item.nodeId) {
+            const n = getNode(item.nodeId);
+            if (n && (n.factType || 'assertion') === 'years') {
+              yearsLabel = __pickBestYearsLabelForSearch(n, q, item);
+            }
+          }
+
+          if (yearsLabel) {
+            title.innerHTML =
+              '<span class="search-item-title-main">' + __escapeHtml(baseTitle) + '</span>' +
+              '<span class="search-item-year">— ' + __escapeHtml(yearsLabel) + '</span>';
+          } else {
+            title.textContent = baseTitle;
+          }
+const sub = document.createElement('div');
+          sub.className = 'search-item-sub';
+
+          const found =
+            (item.foundWord
+              ? ('нашли: ' + item.foundWord + (item.matchKind === 'exact' ? ' (точно)' : ' (похоже)'))
+              : ('нашли: ' + (item.foundTerm || '').trim()));
+
+          const subText = (found + (item.snippet ? (' · ' + item.snippet) : '')).trim();
+          sub.innerHTML = __highlightInline(subText, q);
+
+          const path = document.createElement('div');
+          path.className = 'search-item-path';
+          path.textContent = (item.path || '').trim();
+
+          main.appendChild(title);
+          main.appendChild(sub);
+          if (item.path) main.appendChild(path);
+
+          row.appendChild(badge);
+          row.appendChild(main);
+
+          row.title = item.path || '';
+
+          row.addEventListener('mouseenter', () => setGlobalSearchActiveIndex(Number(row.dataset.gsIndex)));
+
+          row.addEventListener('click', () => {
+            __applyGlobalSearchItem(item);
+          });
+
+          body.appendChild(row);
+          __globalSearchDisplayFlat.push(item);
+          flatIndex++;
+        });
+
+        sec.appendChild(head);
+        sec.appendChild(body);
+        secResultsEl = sec;
+      }
+
+      // Suggestions as chips (secondary)
+      if (suggestions.length) {
+        const sec = document.createElement('div');
+        sec.className = 'search-section search-section-suggestions';
+
+        const head = document.createElement('div');
+        head.className = 'search-section-header';
+        head.innerHTML =
+          '<div class="search-section-title">Т9 / АВТОДОПОЛНЕНИЕ <span class="search-section-count">(' + suggestions.length + ')</span></div>' +
+          '<div class="search-section-hints"><span class="kbd">Tab</span><span>вставить</span></div>';
+
+        const body = document.createElement('div');
+        body.className = 'search-sug-body';
+
+        const chips = document.createElement('div');
+        chips.className = 'search-sug-chips';
+
+        suggestions.forEach(item => {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'search-sug-chip';
+          chip.dataset.gsIndex = String(flatIndex);
+          chip.title = 'Клик — вставить слово в поиск';
+
+          const word = (item.title || item.value || '').toString().trim();
+          const lowQ = (q || '').toLowerCase();
+          const lowW = word.toLowerCase();
+          let htmlWord = __escapeHtml(word);
+
+          if (q && lowW.startsWith(lowQ)) {
+            const pref = word.slice(0, q.length);
+            const rest = word.slice(q.length);
+            htmlWord = '<span class="chip-hl">' + __escapeHtml(pref) + '</span>' + __escapeHtml(rest);
+          } else if (q && lowW.includes(lowQ)) {
+            const idx = lowW.indexOf(lowQ);
+            const a = word.slice(0, idx);
+            const b = word.slice(idx, idx + q.length);
+            const c = word.slice(idx + q.length);
+            htmlWord = __escapeHtml(a) + '<span class="chip-hl">' + __escapeHtml(b) + '</span>' + __escapeHtml(c);
+          }
+
+          chip.innerHTML = htmlWord + ' <span class="chip-action">↩</span>';
+
+          chip.addEventListener('mouseenter', () => setGlobalSearchActiveIndex(Number(chip.dataset.gsIndex)));
+
+          chip.addEventListener('click', () => {
+            __applyGlobalSearchItem(item);
+          });
+
+          chips.appendChild(chip);
+
+          __globalSearchDisplayFlat.push(item);
+          flatIndex++;
+        });
+
+        body.appendChild(chips);
+        sec.appendChild(head);
+        sec.appendChild(body);
+        secSugEl = sec;
+      }
+
+      // визуально: сначала Т9/автодополнение, потом результаты
+      if (secSugEl) globalSearchResultsEl.appendChild(secSugEl);
+      if (secResultsEl) globalSearchResultsEl.appendChild(secResultsEl);
+
       globalSearchResultsEl.style.display = 'block';
+
+      // default active: first result if exists, else first suggestion
+      if (__globalSearchDisplayFlat.length) {
+        setGlobalSearchActiveIndex(0);
+      }
     }
+
 
     let __globalSearchLastQuery = '';
     let __globalSearchLastResults = [];
@@ -5442,6 +6561,8 @@ function attachSectionToggles(wrapper) {
     function refreshGlobalSearch({ forceShow = false } = {}) {
       if (!globalSearchInputEl) return;
       const q = (globalSearchInputEl.value || '').trim();
+      const __clr = document.getElementById('globalSearchClear');
+      if (__clr) __clr.style.display = q ? 'flex' : 'none';
       __activeSearchHighlight = q;
 
       // подсветка в текущем экране — БЕЗ автоскролла, чтобы не дергался экран при наборе
@@ -5482,14 +6603,71 @@ function attachSectionToggles(wrapper) {
       });
 
       globalSearchInputEl.addEventListener('keydown', (e) => {
+        const listVisible = globalSearchResultsEl && globalSearchResultsEl.style.display !== 'none' && __globalSearchDisplayFlat && __globalSearchDisplayFlat.length;
+
         if (e.key === 'Escape') {
+          e.preventDefault();
           globalSearchInputEl.value = '';
           renderGlobalSearchResults([]);
           __activeSearchHighlight = '';
           applyActiveSearchHighlight(false);
+          const clr = document.getElementById('globalSearchClear');
+          if (clr) clr.style.display = 'none';
+          return;
+        }
+
+        if (listVisible && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+          e.preventDefault();
+          const n = __globalSearchDisplayFlat.length;
+          if (!n) return;
+          let idx = (__globalSearchActiveIndex >= 0 ? __globalSearchActiveIndex : 0);
+          idx = e.key === 'ArrowDown' ? Math.min(n - 1, idx + 1) : Math.max(0, idx - 1);
+          setGlobalSearchActiveIndex(idx);
+          return;
+        }
+
+        if (e.key === 'Tab' && listVisible) {
+          // Tab: вставить, если выбран автодополнительный вариант
+          const idx = (__globalSearchActiveIndex >= 0 ? __globalSearchActiveIndex : 0);
+          const item = __globalSearchDisplayFlat[idx];
+          if (item && (item.kind === 'suggestion' || item.type === 'suggestion')) {
+            e.preventDefault();
+            __applyGlobalSearchItem(item);
+          }
+          return;
+        }
+
+        if (e.key === 'Enter') {
+          if (listVisible) {
+            e.preventDefault();
+            const idx = (__globalSearchActiveIndex >= 0 ? __globalSearchActiveIndex : 0);
+            const item = __globalSearchDisplayFlat[idx] || __globalSearchDisplayFlat[0];
+            __applyGlobalSearchItem(item);
+          }
+          return;
         }
       });
-    }
+    
+
+      const globalSearchClearEl = document.getElementById('globalSearchClear');
+      if (globalSearchClearEl) {
+        globalSearchClearEl.addEventListener('click', () => {
+          globalSearchInputEl.value = '';
+          globalSearchInputEl.focus();
+          renderGlobalSearchResults([]);
+          __activeSearchHighlight = '';
+          applyActiveSearchHighlight(false);
+          globalSearchClearEl.style.display = 'none';
+        });
+      }
+
+      // клик вне поисковика — просто скрыть дропдаун
+      document.addEventListener('click', (ev) => {
+        const t = ev.target;
+        if (t && t.closest && t.closest('.topbar-search')) return;
+        if (globalSearchResultsEl) globalSearchResultsEl.style.display = 'none';
+      });
+}
 
     document.addEventListener('click', (e) => {
       if (!globalSearchResultsEl || !globalSearchInputEl) return;
@@ -5698,18 +6876,10 @@ function attachSectionToggles(wrapper) {
         }
       }
 
-      const splash = screens.splash;
-      if (splash) {
-        splash.addEventListener('click', function () {
-          showScreen('brain');
-        });
-        // Авто-переход на второй экран
-        setTimeout(function () {
-          showScreen('brain');
-        }, 2200);
-      }
+       // старт сразу в «подготовка к экзаменам»
+       showScreen('app');
 
-      const btnGoToApp = document.getElementById('btnGoToApp');
+       const btnGoToApp = document.getElementById('btnGoToApp');
       if (btnGoToApp) {
         btnGoToApp.addEventListener('click', function () {
           showScreen('app');
@@ -5790,7 +6960,7 @@ function attachSectionToggles(wrapper) {
           appRoot.classList.remove('sidebar-collapsed');
           const w = window.__sidebarWidthPx;
           if (w && !isNaN(w)) {
-            appRoot.style.gridTemplateColumns = `96px ${w}px 6px minmax(0, 1fr)`;
+            appRoot.style.gridTemplateColumns = `${w}px 6px minmax(0, 1fr)`;
           } else if (appRoot.dataset.prevGridTemplate) {
             appRoot.style.gridTemplateColumns = appRoot.dataset.prevGridTemplate;
           }
@@ -5820,7 +6990,8 @@ function attachSectionToggles(wrapper) {
       const collapsedGoBrain = document.getElementById('collapsedGoBrain');
       if (collapsedGoBrain) {
         collapsedGoBrain.addEventListener('click', function () {
-          showScreen('brain');
+          // меню удалено — остаёмся в приложении
+          showScreen('app');
         });
       }
 
@@ -5859,5 +7030,28 @@ function attachSectionToggles(wrapper) {
       }
     })();
   </script>
+<!-- ROOT "+" MODAL (иерархия: создать корень или импортировать базу) -->
+<div class="modal-backdrop" id="rootPlusModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-header-main">
+        <div class="modal-title">КОРЕНЬ</div>
+        <div class="modal-subtitle">Добавить корневую папку или загрузить базу данных.</div>
+      </div>
+      <button type="button" class="modal-close" id="rootPlusClose">×</button>
+    </div>
+
+    <div class="modal-body">
+      <button type="button" class="btn btn-sm btn-primary btn-option" id="rootPlusCreate">Создать корневую папку</button>
+      <button type="button" class="btn btn-sm btn-ghost btn-option" id="rootPlusImport">Импортировать базу (JSON)</button>
+      <div class="hint" style="margin-top:6px;">Импорт заменит текущие данные в этом браузере.</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-sm btn-ghost" id="rootPlusCancel">Отмена</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
